@@ -1,0 +1,14 @@
+services:
+  flow-crm-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flow-crm-frontend
+    ports:
+      - "3000:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
