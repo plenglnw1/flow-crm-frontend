@@ -1,73 +1,88 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import PipelineColumn, { type Stage } from '$lib/components/pipeline/PipelineColumn.svelte';
 	import type { DealCard } from '$lib/components/pipeline/PipelineDealCard.svelte';
 
-	type StageWithDeals = Stage & { deals: DealCard[]; dotColorClass: string };
+	type BackendStage = { id: string; name: string; position: number; is_won: boolean };
+	type BackendDeal = {
+		id: string;
+		stage_id: string | null;
+		name: string;
+		value: number;
+		next_action?: string | null;
+		expected_close_date?: string | null;
+		is_stale: boolean;
+		days_in_stage: number;
+		customer: { name: string | null; organization_name: string | null; nickname: string | null };
+	};
 
-	const stages: StageWithDeals[] = [
-		{
-			id: 'prospect',
-			name: 'Prospect',
-			position: 0,
-			dotColorClass: 'bg-gray-400',
-			deals: [
-				{
-					id: 'd1',
-					customerName: 'Acme Co., Ltd.',
-					organizationName: 'Acme Group',
-					value: 250000,
-					isStale: false,
-					nextAction: 'โทรนัดเดโม',
-					expectedCloseDate: '18 Mar 2026',
-					daysInStage: 2
-				}
-			]
-		},
-		{
-			id: 'contacted',
-			name: 'Contacted',
-			position: 1,
-			dotColorClass: 'bg-emerald-300',
-			deals: [
-				{
-					id: 'd2',
-					customerName: 'Blue Ocean',
-					value: 89000,
-					isStale: true,
-					daysInStage: 5
-				}
-			]
-		},
-		{
-			id: 'quoted',
-			name: 'Quoted',
-			position: 2,
-			dotColorClass: 'bg-yellow-300',
-			deals: []
-		},
-		{
-			id: 'negotiation',
-			name: 'Negotiation',
-			position: 3,
-			dotColorClass: 'bg-slate-400',
-			deals: []
-		},
-		{
-			id: 'won',
-			name: 'Won',
-			position: 4,
-			dotColorClass: 'bg-green-500',
-			deals: []
-		}
-	];
+	let { data }: { data: { stages: BackendStage[]; deals: BackendDeal[] } } = $props();
 
-	let draggedItem: DealCard | null = null;
-	let sourceStageIndex: number | null = null;
-	let showToast = false;
-	let toastMessage = '';
+	function dotColorClassByStageName(stageName: string) {
+		// Stage name in seed is often like "ลูกค้า (Prospect)" so we match by keyword.
+		const s = stageName.toLowerCase();
+		if (s.includes('prospect')) return 'bg-gray-400';
+		if (s.includes('contacted')) return 'bg-emerald-300';
+		if (s.includes('quoted')) return 'bg-yellow-300';
+		if (s.includes('negotiation')) return 'bg-slate-400';
+		if (s.includes('won')) return 'bg-green-500';
+		return 'bg-slate-300';
+	}
 
-	const totalValue = () =>
-		stages.reduce((sum, s) => sum + s.deals.reduce((dSum, d) => dSum + d.value, 0), 0);
+	function formatExpectedCloseDate(input: string | null | undefined) {
+		if (!input) return '-';
+		const d = new Date(input);
+		if (Number.isNaN(d.getTime())) return '-';
+		return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
+	}
+
+	function mapDeal(d: BackendDeal): DealCard {
+		return {
+			id: d.id,
+			customerName: d.customer.name ?? 'Unknown Customer',
+			organizationName: d.customer.organization_name ?? undefined,
+			value: d.value,
+			isStale: d.is_stale,
+			nextAction: d.next_action ?? undefined,
+			expectedCloseDate: formatExpectedCloseDate(d.expected_close_date),
+			daysInStage: d.days_in_stage
+		};
+	}
+
+	let draggedItem = $state<DealCard | null>(null);
+	let sourceStageIndex = $state<number | null>(null);
+	let showToast = $state(false);
+	let toastMessage = $state('');
+
+	type StageWithDeals = Stage & { dotColorClass: string; deals: DealCard[] };
+
+	function computeStagesWithDeals(): StageWithDeals[] {
+		return data.stages
+			.slice()
+			.sort((a: BackendStage, b: BackendStage) => a.position - b.position)
+			.map((s: BackendStage) => {
+				const deals = data.deals
+					.filter((d: BackendDeal) => d.stage_id === s.id)
+					.map((d: BackendDeal) => mapDeal(d));
+
+				return {
+					id: s.id,
+					name: s.name,
+					position: s.position,
+					deals,
+					dotColorClass: dotColorClassByStageName(s.name)
+				};
+			});
+	}
+
+	const stagesWithDeals = $derived(computeStagesWithDeals());
+
+	const totalValue = $derived(
+		stagesWithDeals.reduce(
+			(sum: number, s: StageWithDeals) => sum + s.deals.reduce((ds: number, d: DealCard) => ds + d.value, 0),
+			0
+		)
+	);
 
 	function triggerToast(message: string) {
 		toastMessage = message;
@@ -77,17 +92,18 @@
 
 	function startDrag(event: DragEvent, deal: DealCard) {
 		draggedItem = deal;
-		const stage = stages.find((s) => s.deals.some((d) => d.id === deal.id));
-		sourceStageIndex = stage?.position ?? 0;
-		if (event.dataTransfer) {
-			event.dataTransfer.effectAllowed = 'move';
-		}
+		const stage = stagesWithDeals.find(
+			(s: StageWithDeals) => s.deals.some((d: DealCard) => d.id === deal.id)
+		);
+		sourceStageIndex = stage?.position ?? null;
+
+		if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
 		const target = event.currentTarget as HTMLElement | null;
 		if (target) target.style.opacity = '0.5';
 	}
 
 	function dragOver(_event: DragEvent, _targetIndex: number) {
-		// UI-only parity with Alpine version; no-op for now.
+		// No-op
 	}
 
 	function isInvalidDrop(targetIndex: number) {
@@ -95,19 +111,53 @@
 		return targetIndex < sourceStageIndex;
 	}
 
-	function drop(event: DragEvent, _targetStageId: string, targetIndex: number) {
+	function editDeal(dealId: string) {
+		goto(`/deals/${dealId}/edit`);
+	}
+
+	function addDeal(stageId: string) {
+		goto(`/deals/create?stage_id=${encodeURIComponent(stageId)}`);
+	}
+
+	async function drop(event: DragEvent, targetStageId: string, targetIndex: number) {
 		const target = event.target as HTMLElement | null;
 		if (target) target.style.opacity = '1';
 
-		if (sourceStageIndex === null) return;
+		if (!draggedItem || sourceStageIndex === null) return;
+
 		if (targetIndex < sourceStageIndex) {
 			triggerToast('ห้ามย้อนสถานะการขาย เพื่อรักษาความถูกต้องของ Process');
 			return;
 		}
 		if (targetIndex === sourceStageIndex) return;
 
-		// UI only: do not persist changes yet.
-		triggerToast('UI only: drag & drop ยังไม่บันทึกข้อมูล');
+		const res = await fetch('/pipeline-stages/move-stage', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ dealId: draggedItem.id, targetStageId })
+		});
+
+		if (!res.ok) {
+			triggerToast('ไม่สามารถย้ายดีลได้ กรุณาลองใหม่');
+			return;
+		}
+
+		window.location.reload();
+	}
+
+	async function deleteDeal(dealId: string) {
+		const res = await fetch('/pipeline-stages/delete-deal', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ dealId })
+		});
+
+		if (!res.ok) {
+			triggerToast('ลบดีลไม่สำเร็จ');
+			return;
+		}
+
+		window.location.reload();
 	}
 </script>
 
@@ -116,7 +166,7 @@
 		<div>
 			<h1 class="text-2xl font-bold text-slate-900">Sales Pipeline</h1>
 			<p class="text-slate-500 mt-1">
-				มูลค่ารวม <span class="font-bold text-slate-800">฿{totalValue().toLocaleString()}</span>
+				มูลค่ารวม <span class="font-bold text-slate-800">฿{totalValue.toLocaleString()}</span>
 			</p>
 		</div>
 
@@ -124,7 +174,7 @@
 			<button
 				type="button"
 				class="px-4 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2"
-				disabled
+				on:click={() => goto('/pipeline-stages/create')}
 			>
 				<svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -135,7 +185,7 @@
 			<button
 				type="button"
 				class="bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 flex items-center gap-2 shadow-lg shadow-slate-900/20 transition-all font-medium"
-				disabled
+				on:click={() => goto('/deals/create')}
 			>
 				<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -147,7 +197,7 @@
 
 	<div class="p-6 overflow-x-auto">
 		<div class="flex gap-6 min-w-max pb-10">
-			{#each stages as stage (stage.id)}
+			{#each stagesWithDeals as stage (stage.id)}
 				<PipelineColumn
 					stage={{ id: stage.id, name: stage.name, position: stage.position }}
 					deals={stage.deals}
@@ -156,6 +206,9 @@
 					onDrop={drop}
 					onDragOver={dragOver}
 					onDealDragStart={startDrag}
+					onAddDeal={addDeal}
+					onEdit={editDeal}
+					onDelete={deleteDeal}
 				/>
 			{/each}
 		</div>

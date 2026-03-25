@@ -24,7 +24,7 @@
 		rose: { bg: 'bg-rose-100', text: 'text-rose-500', hover: 'group-hover:bg-rose-200' }
 	} as const;
 
-	const theme = $derived(colors[template.color ?? 'blue'] ?? colors.blue);
+	const theme = $derived(colors[(template.color ?? 'blue') as keyof typeof colors] ?? colors.blue);
 </script>
 
 <div class="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col h-full hover:shadow-lg hover:border-gray-300 transition-all duration-200 group relative">

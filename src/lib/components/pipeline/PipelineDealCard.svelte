@@ -10,10 +10,12 @@
 		daysInStage: number;
 	};
 
-	let { deal, onDragStart } = $props<{
-		deal: DealCard;
-		onDragStart: (event: DragEvent, deal: DealCard) => void;
-	}>();
+let { deal, onDragStart, onEdit, onDelete } = $props<{
+	deal: DealCard;
+	onDragStart: (event: DragEvent, deal: DealCard) => void;
+	onEdit?: (dealId: string) => void;
+	onDelete?: (dealId: string) => void;
+}>();
 </script>
 
 <div
@@ -21,6 +23,39 @@
 	on:dragstart={(e) => onDragStart(e, deal)}
 	class="p-4 rounded-xl border border-gray-200 shadow-sm bg-white cursor-move hover:shadow-md hover:border-emerald-300 transition-all relative group"
 >
+	{#if onEdit}
+		<button
+			type="button"
+			class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-slate-900/5 hover:bg-slate-900/10 text-slate-600"
+			on:click={(e) => {
+				e.stopPropagation();
+				onEdit(deal.id);
+			}}
+			aria-label="Edit deal"
+		>
+			<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+			</svg>
+		</button>
+	{/if}
+
+	{#if onDelete}
+		<button
+			type="button"
+			class="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-red-600/5 hover:bg-red-600/10 text-red-600"
+			on:click={(e) => {
+				e.stopPropagation();
+				onDelete(deal.id);
+			}}
+			aria-label="Delete deal"
+		>
+			<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m-5 0h16" />
+			</svg>
+		</button>
+	{/if}
+
 	<div class="mb-3">
 		<h3 class="font-bold text-slate-800 text-lg">{deal.customerName}</h3>
 		{#if deal.organizationName}

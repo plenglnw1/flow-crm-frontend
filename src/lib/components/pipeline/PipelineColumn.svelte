@@ -14,7 +14,10 @@
 		invalidDrop = false,
 		onDrop,
 		onDragOver,
-		onDealDragStart
+		onDealDragStart,
+		onAddDeal,
+		onEdit,
+		onDelete
 	} = $props<{
 		stage: Stage;
 		deals?: DealCard[];
@@ -23,10 +26,13 @@
 		onDrop: (event: DragEvent, targetStageId: string, targetIndex: number) => void;
 		onDragOver: (event: DragEvent, targetIndex: number) => void;
 		onDealDragStart: (event: DragEvent, deal: DealCard) => void;
+		onAddDeal: (stageId: string) => void;
+		onEdit?: (dealId: string) => void;
+		onDelete?: (dealId: string) => void;
 	}>();
 
-	const totalAmount = $derived(deals.reduce((sum, d) => sum + d.value, 0));
-	const count = $derived(deals.length);
+	const totalAmount = $derived(deals.reduce((sum: number, d: DealCard) => sum + d.value, 0));
+	const count = $derived(deals.length as number);
 
 	const totalText = () => {
 		if (totalAmount <= 0) return '0';
@@ -50,12 +56,13 @@
 
 	<div class="p-3 space-y-3 flex-1 overflow-y-auto min-h-[500px]">
 		{#each deals as deal (deal.id)}
-			<PipelineDealCard {deal} onDragStart={onDealDragStart} />
+			<PipelineDealCard {deal} onDragStart={onDealDragStart} onEdit={onEdit} onDelete={onDelete} />
 		{/each}
 
 		<button
 			type="button"
 			class="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 hover:border-emerald-400 hover:text-emerald-500 hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 group"
+			on:click={() => onAddDeal(stage.id)}
 		>
 			<svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
