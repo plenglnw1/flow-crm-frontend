@@ -51,7 +51,9 @@
 						/>
 					</svg>
 				</div>
-				<span class="text-lg font-bold text-white tracking-wide transition-colors group-hover:text-emerald-400">
+				<span
+					class="text-lg font-bold text-white tracking-wide transition-colors group-hover:text-emerald-400"
+				>
 					FlowCRM
 				</span>
 			</a>
@@ -65,7 +67,12 @@
 				aria-label="Collapse sidebar"
 			>
 				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M15 19l-7-7 7-7"
+					/>
 				</svg>
 			</button>
 		{:else}
@@ -95,7 +102,10 @@
 
 	<div class="border-t border-slate-800 p-3 bg-slate-900">
 		<div class="flex items-center justify-between">
-			<a href="/profile" class="flex items-center gap-3 rounded-xl p-2 hover:bg-slate-800 transition-colors flex-1 overflow-hidden">
+			<a
+				href="/profile"
+				class="flex items-center gap-3 rounded-xl p-2 hover:bg-slate-800 transition-colors flex-1 overflow-hidden"
+			>
 				<div
 					class="h-10 w-10 shrink-0 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold overflow-hidden border border-slate-600 transition-colors"
 				>
@@ -131,4 +141,3 @@
 		</div>
 	</div>
 </aside>
-

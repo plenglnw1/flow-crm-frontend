@@ -10,7 +10,11 @@
 		organization_name?: string | null;
 	};
 
-	let { customer, isSelected = false, onclick } = $props<{
+	let {
+		customer,
+		isSelected = false,
+		onclick
+	} = $props<{
 		customer: CustomerListItem;
 		isSelected?: boolean;
 		onclick?: () => void;
@@ -21,11 +25,17 @@
 
 <button
 	type="button"
-	class="w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group {isSelected ? 'border-emerald-500 bg-white ring-1 ring-emerald-500 shadow-sm' : 'border-slate-200 bg-white hover:border-emerald-300 hover:shadow-sm'}"
+	class="w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group {isSelected
+		? 'border-emerald-500 bg-white ring-1 ring-emerald-500 shadow-sm'
+		: 'border-slate-200 bg-white hover:border-emerald-300 hover:shadow-sm'}"
 	{onclick}
 >
 	<div class="flex items-center gap-4">
-		<div class="w-12 h-12 shrink-0 rounded-full flex items-center justify-center font-bold text-lg {isSelected ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600 group-hover:bg-emerald-50 group-hover:text-emerald-600'} transition-colors">
+		<div
+			class="w-12 h-12 shrink-0 rounded-full flex items-center justify-center font-bold text-lg {isSelected
+				? 'bg-emerald-100 text-emerald-700'
+				: 'bg-slate-100 text-slate-600 group-hover:bg-emerald-50 group-hover:text-emerald-600'} transition-colors"
+		>
 			{initials}
 		</div>
 		<div class="flex flex-col gap-1">
@@ -36,12 +46,20 @@
 				<CustomerStatusBadge isActive={customer.is_active} />
 			</div>
 			<span class="text-sm text-slate-500 leading-none truncate max-w-[180px]">
-				คุณ{customer.name} {customer.organization_name ? `(${customer.organization_name})` : ''}
+				คุณ{customer.name}
+				{customer.organization_name ? `(${customer.organization_name})` : ''}
 			</span>
 		</div>
 	</div>
 	<div class="flex flex-col items-end gap-1">
-		<svg class="w-5 h-5 text-slate-400 {isSelected ? 'text-emerald-500' : 'group-hover:text-emerald-400'} transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<svg
+			class="w-5 h-5 text-slate-400 {isSelected
+				? 'text-emerald-500'
+				: 'group-hover:text-emerald-400'} transition-colors"
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+		>
 			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 		</svg>
 		<span class="font-semibold {isSelected ? 'text-emerald-600' : 'text-emerald-500'}">

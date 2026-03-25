@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
 
-	let { href, label, icon = 'generic', collapsed = false } = $props<{
+	let {
+		href,
+		label,
+		icon = 'generic',
+		collapsed = false
+	} = $props<{
 		href: string;
 		label: string;
 		icon?: 'pipeline' | 'template' | 'customers' | 'generic';
@@ -21,7 +26,13 @@
 	class:hover:text-white={!isActive()}
 >
 	{#if icon === 'pipeline'}
-		<svg class="h-6 w-6 shrink-0 transition-colors" class:group-hover:text-emerald-400={!isActive()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<svg
+			class="h-6 w-6 shrink-0 transition-colors"
+			class:group-hover:text-emerald-400={!isActive()}
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+		>
 			<path
 				stroke-linecap="round"
 				stroke-linejoin="round"
@@ -30,7 +41,13 @@
 			/>
 		</svg>
 	{:else if icon === 'template'}
-		<svg class="h-6 w-6 shrink-0 transition-colors" class:group-hover:text-emerald-400={!isActive()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<svg
+			class="h-6 w-6 shrink-0 transition-colors"
+			class:group-hover:text-emerald-400={!isActive()}
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+		>
 			<path
 				stroke-linecap="round"
 				stroke-linejoin="round"
@@ -39,12 +56,34 @@
 			/>
 		</svg>
 	{:else if icon === 'customers'}
-		<svg class="h-6 w-6 shrink-0 transition-colors" class:group-hover:text-emerald-400={!isActive()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+		<svg
+			class="h-6 w-6 shrink-0 transition-colors"
+			class:group-hover:text-emerald-400={!isActive()}
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+			/>
 		</svg>
 	{:else}
-		<svg class="h-6 w-6 shrink-0 transition-colors" class:group-hover:text-emerald-400={!isActive()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+		<svg
+			class="h-6 w-6 shrink-0 transition-colors"
+			class:group-hover:text-emerald-400={!isActive()}
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M4 6h16M4 12h16M4 18h16"
+			/>
 		</svg>
 	{/if}
 
@@ -52,4 +91,3 @@
 		<span class="font-medium whitespace-nowrap transition-opacity duration-200">{label}</span>
 	{/if}
 </a>
-
