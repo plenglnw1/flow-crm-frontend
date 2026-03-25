@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { customerFormalLabel } from '$lib/customer-display';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import DealFormFields from '$lib/components/deals/DealFormFields.svelte';
@@ -95,7 +96,11 @@
 				<span class={`px-2.5 py-0.5 rounded-full text-xs font-bold ${healthColor}`}>{healthText}</span>
 			</div>
 			<p class="text-sm text-slate-500 mt-1">
-				ลูกค้า: <strong>{deal.customer?.nickname ?? deal.customer?.name ?? '-'}</strong> • สร้างเมื่อ{' '}
+				ลูกค้า: <strong>{customerFormalLabel(deal.customer?.name ?? '')}</strong>
+				{#if deal.customer?.nickname}
+					<span class="text-slate-400"> (ชื่อเล่น {deal.customer.nickname})</span>
+				{/if}
+				<span> • สร้างเมื่อ </span>
 				{deal.created_at ? new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(deal.created_at)) : '-'}
 			</p>
 		</div>

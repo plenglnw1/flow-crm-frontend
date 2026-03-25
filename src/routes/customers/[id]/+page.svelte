@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { customerFormalLabel, customerNameInitial } from '$lib/customer-display';
 	import CustomerStatusBadge from '$lib/components/customers/CustomerStatusBadge.svelte';
 
 	let { data } = $props();
@@ -104,12 +105,12 @@
 							class="w-full h-full rounded-full object-cover"
 						/>
 					{:else}
-						{(customer.nickname || customer.fullname || 'U').slice(0, 1).toUpperCase()}
+						{customerNameInitial(customer.fullname)}
 					{/if}
 				</div>
 				<div>
 					<div class="flex items-center gap-3 mb-1">
-						<h1 class="text-2xl font-bold text-slate-900">คุณ{customer.fullname}</h1>
+						<h1 class="text-2xl font-bold text-slate-900">{customerFormalLabel(customer.fullname)}</h1>
 						<CustomerStatusBadge isActive={customer.is_active} />
 					</div>
 					<p class="text-slate-500 font-medium">ชื่อเล่น: {customer.nickname || '-'}</p>

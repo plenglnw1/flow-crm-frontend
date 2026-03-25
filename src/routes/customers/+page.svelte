@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { customerFormalLabel, customerNameInitial } from '$lib/customer-display';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import CustomerListCard, {
@@ -56,6 +57,12 @@
 
 	function selectCustomer(customer: CustomerListItem) {
 		selectedCustomer = customer;
+	}
+
+	function lineProfileUrl(lineId: string | null | undefined) {
+		if (!lineId) return '#';
+		const clean = lineId.replace('@', '');
+		return `https://line.me/ti/p/~${clean}`;
 	}
 </script>
 
@@ -144,19 +151,32 @@
 						<div
 							class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold"
 						>
-							{(selectedCustomer.nickname || selectedCustomer.name).slice(0, 1).toUpperCase()}
+							{customerNameInitial(selectedCustomer.name)}
 						</div>
 						<div>
 							<div class="flex items-center gap-3">
-								<h2 class="text-xl font-bold text-slate-900">คุณ{selectedCustomer.name}</h2>
+								<h2 class="text-xl font-bold text-slate-900">
+									{customerFormalLabel(selectedCustomer.name)}
+								</h2>
 								<CustomerStatusBadge isActive={selectedCustomer.is_active} />
 							</div>
-							<p class="text-slate-500 mt-1">ชื่อเล่น: {selectedCustomer.nickname || '-'}</p>
+							<p class="text-slate-500 mt-1">
+								{#if selectedCustomer.nickname}
+									ชื่อเล่น: {selectedCustomer.nickname} · ข้อมูลเต็มเมื่อกดดูรายละเอียด
+								{:else}
+									กดดูรายละเอียดเพื่อแก้ไขชื่อเล่น · LINE · เบอร์
+								{/if}
+							</p>
 						</div>
 					</div>
 					<div>
-						<button
-							class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors shadow-sm gap-2"
+						<a
+							href={lineProfileUrl(selectedCustomer.line_id)}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition-colors shadow-sm gap-2 {!selectedCustomer.line_id
+								? 'pointer-events-none opacity-50'
+								: ''}"
 						>
 							<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path
@@ -167,7 +187,7 @@
 								/>
 							</svg>
 							Open in LINE
-						</button>
+						</a>
 					</div>
 				</div>
 
@@ -192,7 +212,9 @@
 								</svg>
 								<div>
 									<p class="text-xs text-slate-500 font-medium mb-1">LINE ID</p>
-									<p class="font-medium text-slate-900">@... (คลิกเพื่อดูรายละเอียดเพิ่มเติม)</p>
+									<p class="font-medium text-slate-900 break-all">
+										{selectedCustomer.line_id ?? '—'}
+									</p>
 								</div>
 							</div>
 						</div>
@@ -213,7 +235,7 @@
 								</svg>
 								<div>
 									<p class="text-xs text-slate-500 font-medium mb-1">เบอร์โทร</p>
-									<p class="font-medium text-slate-900">-</p>
+									<p class="font-medium text-slate-900">{selectedCustomer.phone_num ?? '—'}</p>
 								</div>
 							</div>
 						</div>

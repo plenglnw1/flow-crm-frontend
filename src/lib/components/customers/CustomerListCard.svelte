@@ -1,10 +1,14 @@
 <script lang="ts">
+	import { customerFormalLabel, customerNameInitial } from '$lib/customer-display';
 	import CustomerStatusBadge from './CustomerStatusBadge.svelte';
 
 	export type CustomerListItem = {
 		id: number;
 		name: string;
 		nickname?: string | null;
+		line_id?: string | null;
+		phone_num?: string | null;
+		province?: string | null;
 		is_active: boolean;
 		lifetime_value?: number;
 		organization_name?: string | null;
@@ -20,7 +24,8 @@
 		onclick?: () => void;
 	}>();
 
-	const initials = $derived((customer.nickname || customer.name).slice(0, 1).toUpperCase());
+	const initials = $derived(customerNameInitial(customer.name));
+	const title = $derived(customerFormalLabel(customer.name));
 </script>
 
 <button
@@ -39,15 +44,12 @@
 			{initials}
 		</div>
 		<div class="flex flex-col gap-1">
-			<div class="flex items-center gap-2">
-				<span class="font-bold text-slate-900 leading-none">
-					{customer.nickname ? customer.nickname : customer.name}
-				</span>
+			<div class="flex items-center gap-2 min-w-0">
+				<span class="font-bold text-slate-900 leading-none truncate">{title}</span>
 				<CustomerStatusBadge isActive={customer.is_active} />
 			</div>
-			<span class="text-sm text-slate-500 leading-none truncate max-w-[180px]">
-				คุณ{customer.name}
-				{customer.organization_name ? `(${customer.organization_name})` : ''}
+			<span class="text-sm text-slate-500 leading-none truncate max-w-[220px]">
+				{customer.province ?? 'แตะเพื่อดูชื่อเล่น · LINE · รายละเอียด'}
 			</span>
 		</div>
 	</div>
