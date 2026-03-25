@@ -48,7 +48,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const cookieHeader = event.request.headers.get('cookie');
 	const pathname = event.url.pathname;
 	const isProtected = protectedPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-	const shouldHydrateUser = isProtected || pathname === '/login';
+	const shouldHydrateUser = isProtected || pathname === '/login' || pathname === '/register';
 
 	const user = shouldHydrateUser ? await fetchMe(cookieHeader) : null;
 	event.locals.user = user ?? null;
@@ -68,7 +68,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		throw redirect(303, target);
 	}
 
-	if (pathname === '/login' && event.locals.user) {
+	if ((pathname === '/login' || pathname === '/register') && event.locals.user) {
 		if (event.locals.user.role === 'sales') {
 			throw redirect(303, '/pipeline-stages');
 		}

@@ -126,6 +126,11 @@
 					{/if}
 				</button>
 			</div>
+
+			<p class="text-center text-sm text-slate-500 pt-4">
+				ยังไม่มีบัญชี Sales?
+				<a href="/register" class="text-emerald-600 font-semibold hover:underline">สมัครด้วยรหัสเชิญ</a>
+			</p>
 		</form>
 	</div>
 </div>

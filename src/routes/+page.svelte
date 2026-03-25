@@ -32,18 +32,28 @@
 		<section class="flex items-center justify-center p-8 lg:p-12 bg-slate-50">
 			<div class="w-full max-w-md">
 				<div class="bg-white rounded-3xl border border-slate-200 shadow-xl p-8">
-					<h2 class="text-2xl font-bold text-slate-900">เข้าสู่ระบบ</h2>
-					<p class="mt-2 text-slate-500">สำหรับทีมขาย (Sales)</p>
+					<h2 class="text-2xl font-bold text-slate-900">Sales app</h2>
+					<p class="mt-2 text-slate-500">
+						เข้าสู่ระบบหรือสมัครฝั่งทีมขายที่นี่ · ผู้จัดการใช้เว็บ backend (Laravel) เท่านั้น
+					</p>
 
-					<a
-						href="/login"
-						class="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-4 text-base font-bold text-white shadow-lg shadow-slate-900/15 hover:bg-slate-800 transition-all"
-					>
-						Log in
-						<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-						</svg>
-					</a>
+					<div class="mt-8 flex flex-col gap-3">
+						<a
+							href="/login"
+							class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-4 text-base font-bold text-white shadow-lg shadow-slate-900/15 hover:bg-slate-800 transition-all"
+						>
+							เข้าสู่ระบบ (Sales)
+							<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+							</svg>
+						</a>
+						<a
+							href="/register"
+							class="w-full inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-slate-200 bg-white px-5 py-4 text-base font-bold text-slate-800 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all"
+						>
+							สมัคร Sales (รหัสเชิญ)
+						</a>
+					</div>
 				</div>
 			</div>
 		</section>
