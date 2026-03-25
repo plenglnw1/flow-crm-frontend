@@ -13,6 +13,7 @@
 		name: string;
 		value: number;
 		next_action?: string | null;
+		next_action_date?: string | null;
 		expected_close_date?: string | null;
 		is_stale: boolean;
 		days_in_stage: number;
@@ -73,6 +74,7 @@
 			value: d.value,
 			isStale: d.is_stale,
 			nextAction: d.next_action ?? undefined,
+			nextActionDate: formatExpectedCloseDate(d.next_action_date),
 			expectedCloseDate: formatExpectedCloseDate(d.expected_close_date),
 			ageHours: d.age_hours
 		};

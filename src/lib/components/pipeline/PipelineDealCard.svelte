@@ -6,8 +6,10 @@
 		value: number;
 		isStale: boolean;
 		nextAction?: string;
+		/** Formatted next follow-up / task due date from API */
+		nextActionDate?: string;
 		expectedCloseDate?: string;
-	ageHours: number;
+		ageHours: number;
 	};
 
 let { deal, onDragStart, onEdit, onDelete } = $props<{
@@ -27,6 +29,10 @@ function formatAgeHours(ageHours: number): string {
 	if (hours > 0) return `${hours} ชม.`;
 	return 'น้อยกว่า 1 ชม.';
 }
+
+const hasPlannedNextAction = $derived(
+	Boolean(deal.nextAction?.trim()) || Boolean(deal.nextActionDate && deal.nextActionDate !== '-')
+);
 </script>
 
 <div
@@ -75,7 +81,7 @@ function formatAgeHours(ageHours: number): string {
 		<p class="text-emerald-500 font-bold mt-1">฿ {deal.value.toLocaleString()}</p>
 	</div>
 
-	{#if deal.isStale}
+	{#if deal.isStale && !hasPlannedNextAction}
 		<div class="bg-red-50 p-3 rounded-lg border border-red-100 mb-3">
 			<div class="flex items-center gap-2 text-red-500 font-bold text-xs mb-1">
 				<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,6 +96,33 @@ function formatAgeHours(ageHours: number): string {
 			</div>
 			<p class="text-slate-800 font-medium text-sm">กำหนดกิจกรรมด่วน</p>
 		</div>
+	{:else if deal.isStale && hasPlannedNextAction}
+		<div class="bg-amber-50 p-3 rounded-lg border border-amber-200 mb-3">
+			<div class="flex items-center gap-2 text-amber-800 font-bold text-xs mb-1">
+				<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+					/>
+				</svg>
+				Next Action เลยกำหนดแล้ว
+			</div>
+			<p class="text-xs text-amber-900/70 mb-1">สิ่งที่ต้องทำต่อ:</p>
+			<p class="text-slate-800 font-medium text-sm">{deal.nextAction?.trim() || 'รอดำเนินการ'}</p>
+			<div class="flex items-center gap-1 mt-2 text-xs text-amber-900/70">
+				<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+					/>
+				</svg>
+				ครบกำหนด: {deal.nextActionDate ?? '-'}
+			</div>
+		</div>
 	{:else}
 		<div class="bg-slate-50 p-3 rounded-lg border border-slate-100 mb-3">
 			<p class="text-xs text-slate-400 mb-1">Next Step:</p>
@@ -103,8 +136,11 @@ function formatAgeHours(ageHours: number): string {
 						d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
 					/>
 				</svg>
-				{deal.expectedCloseDate ?? '-'}
+				ครบกำหนด Next Action: {deal.nextActionDate ?? '-'}
 			</div>
+			{#if deal.expectedCloseDate && deal.expectedCloseDate !== '-'}
+				<p class="text-xs text-slate-400 mt-2">ปิดดีลคาดหมาย: {deal.expectedCloseDate}</p>
+			{/if}
 		</div>
 	{/if}
 
