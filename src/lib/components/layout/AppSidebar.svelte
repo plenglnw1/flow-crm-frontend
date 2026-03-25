@@ -3,7 +3,7 @@
 
 	let { collapsed = $bindable(false), user: _user = null } = $props<{
 		collapsed?: boolean;
-		user?: { name: string; role?: string | null } | null;
+		user?: { name: string; role?: string | null; team_name?: string | null } | null;
 	}>();
 
 	const user = $derived(_user);
@@ -13,6 +13,11 @@
 			href: '/customers',
 			label: 'Customers',
 			icon: 'customers'
+		},
+		{
+			href: '/action-stream',
+			label: 'Action Stream',
+			icon: 'activity'
 		},
 		{
 			href: '/pipeline-stages',
@@ -116,6 +121,7 @@
 					<div class="flex-1 overflow-hidden">
 						<p class="truncate text-sm font-medium text-white">{user?.name ?? 'User'}</p>
 						<p class="truncate text-xs text-slate-500 capitalize">{user?.role ?? 'user'}</p>
+						<p class="truncate text-[11px] text-slate-600">Team: {user?.team_name ?? '-'}</p>
 					</div>
 				{/if}
 			</a>
