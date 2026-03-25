@@ -4,7 +4,7 @@
 	let { href, label, icon = 'generic', collapsed = false } = $props<{
 		href: string;
 		label: string;
-		icon?: 'pipeline' | 'template' | 'generic';
+		icon?: 'pipeline' | 'template' | 'customers' | 'generic';
 		collapsed?: boolean;
 	}>();
 
@@ -37,6 +37,10 @@
 				stroke-width="2"
 				d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
 			/>
+		</svg>
+	{:else if icon === 'customers'}
+		<svg class="h-6 w-6 shrink-0 transition-colors" class:group-hover:text-emerald-400={!isActive()} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
 		</svg>
 	{:else}
 		<svg class="h-6 w-6 shrink-0 transition-colors" class:group-hover:text-emerald-400={!isActive()} fill="none" stroke="currentColor" viewBox="0 0 24 24">

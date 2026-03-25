@@ -10,6 +10,11 @@
 
 	const links = [
 		{
+			href: '/customers',
+			label: 'Customers',
+			icon: 'customers'
+		},
+		{
 			href: '/pipeline-stages',
 			label: 'Pipeline',
 			icon: 'pipeline'

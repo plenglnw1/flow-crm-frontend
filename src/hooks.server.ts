@@ -32,7 +32,7 @@ async function fetchMe(cookieHeader: string | null): Promise<MeResponse | null> 
 }
 
 // Include /deals so layout can show the sidebar (locals.user) and enforce Sales-only app rules.
-const protectedPrefixes = ['/pipeline-stages', '/pipeline-templates', '/deals', '/profile', '/logout'];
+const protectedPrefixes = ['/pipeline-stages', '/pipeline-templates', '/deals', '/profile', '/logout', '/customers'];
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const cookieHeader = event.request.headers.get('cookie');
