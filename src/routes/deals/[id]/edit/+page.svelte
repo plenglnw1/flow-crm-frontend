@@ -25,6 +25,44 @@
 
 	const stageLabel = deal?.lost_at ? 'Lost' : deal?.stage?.name ?? 'Unknown';
 
+	type DealActivity = {
+		id: string;
+		title: string;
+		created_at?: string | null;
+		user_name?: string | null;
+		description?: string | null;
+		type?: string;
+		is_progress_task?: boolean;
+		is_stage_progress?: boolean;
+	};
+
+	function computeTimelineGroups(activities: DealActivity[]) {
+		const ordered = [...(activities ?? [])].sort((a, b) => {
+			const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+			const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+			return ta - tb;
+		});
+
+		const groups: { progress: DealActivity | null; items: DealActivity[] }[] = [];
+		let current: { progress: DealActivity | null; items: DealActivity[] } | null = null;
+
+		for (const a of ordered) {
+			const isProgress = Boolean(a.is_progress_task || a.is_stage_progress);
+			if (isProgress) {
+				if (current) groups.push(current);
+				current = { progress: a, items: [] };
+			} else {
+				if (!current) current = { progress: null, items: [] };
+				current.items.push(a);
+			}
+		}
+
+		if (current) groups.push(current);
+		return groups;
+	}
+
+	let timelineGroups = $derived(computeTimelineGroups(data.activities ?? []));
+
 	function copyLineScript() {
 		// Simple static template; backend currently doesn't store it.
 		const text = `สวัสดีครับ คุณ${deal?.customer?.nickname ?? ''} ผมส่งใบเสนอราคาให้พิจารณา...`;
@@ -57,7 +95,7 @@
 				<span class={`px-2.5 py-0.5 rounded-full text-xs font-bold ${healthColor}`}>{healthText}</span>
 			</div>
 			<p class="text-sm text-slate-500 mt-1">
-				ลูกค้า: <strong>{deal.customer?.name ?? '-'}</strong> • สร้างเมื่อ{' '}
+				ลูกค้า: <strong>{deal.customer?.nickname ?? deal.customer?.name ?? '-'}</strong> • สร้างเมื่อ{' '}
 				{deal.created_at ? new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(deal.created_at)) : '-'}
 			</p>
 		</div>
@@ -135,18 +173,44 @@
 			<div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
 				<h3 class="font-bold text-slate-800 mb-4">Timeline กิจกรรม</h3>
 				<div class="relative border-l-2 border-slate-200 ml-3 space-y-6">
-					{#each data.activities as a (a.id)}
-						<div class="relative pl-6">
-							<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white bg-emerald-500"></div>
-							<p class="text-sm font-bold text-slate-800">{a.title}</p>
-							<p class="text-xs text-slate-500">
-								{a.created_at ? a.created_at : '-'}
-								{#if a.user_name} โดย {a.user_name}{/if}
-							</p>
-						</div>
-					{/each}
 					{#if data.activities.length === 0}
 						<p class="text-sm text-slate-500 ml-3">ยังไม่มีรายการกิจกรรม</p>
+					{:else}
+						{#each timelineGroups as g, i (g.progress?.id ?? `grp-${i}`)}
+							<div class="relative pl-6">
+								<div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white bg-emerald-500"></div>
+
+								{#if g.progress}
+									<p class="text-sm font-bold text-slate-800">
+										{g.progress.is_stage_progress
+											? `ความคืบหน้า: ${g.progress.title}`
+											: g.progress.is_progress_task
+												? `Next Action: ${g.progress.title}`
+												: g.progress.title}
+									</p>
+									<p class="text-xs text-slate-500 mt-1">{g.progress.created_at ? g.progress.created_at : '-'}</p>
+								{/if}
+
+								{#if g.items.length > 0}
+									<div class="mt-3 space-y-2">
+										{#each g.items as act (act.id)}
+											<div class="bg-slate-50 border border-slate-100 rounded-lg p-3">
+												<p class="text-sm font-semibold text-slate-900">{act.title}</p>
+												<p class="text-xs text-slate-500 mt-1">
+													{act.created_at ? act.created_at : '-'}
+													{#if act.user_name} • {act.user_name}{/if}
+												</p>
+												{#if act.description}
+													<p class="text-xs text-slate-600 mt-2">{act.description}</p>
+												{/if}
+											</div>
+										{/each}
+									</div>
+								{:else}
+									<p class="text-xs text-slate-500 mt-3">ยังไม่มี Activities ในรอบความคืบหน้านี้</p>
+								{/if}
+							</div>
+						{/each}
 					{/if}
 				</div>
 			</div>
