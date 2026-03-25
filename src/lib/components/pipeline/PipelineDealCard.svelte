@@ -7,7 +7,7 @@
 		isStale: boolean;
 		nextAction?: string;
 		expectedCloseDate?: string;
-		daysInStage: number;
+	ageHours: number;
 	};
 
 let { deal, onDragStart, onEdit, onDelete } = $props<{
@@ -16,6 +16,17 @@ let { deal, onDragStart, onEdit, onDelete } = $props<{
 	onEdit?: (dealId: string) => void;
 	onDelete?: (dealId: string) => void;
 }>();
+
+function formatAgeHours(ageHours: number): string {
+	const safe = Number.isFinite(ageHours) ? Math.max(0, Math.floor(ageHours)) : 0;
+	const days = Math.floor(safe / 24);
+	const hours = safe % 24;
+
+	if (days > 0 && hours > 0) return `${days} วัน ${hours} ชม.`;
+	if (days > 0) return `${days} วัน`;
+	if (hours > 0) return `${hours} ชม.`;
+	return 'น้อยกว่า 1 ชม.';
+}
 </script>
 
 <div
@@ -98,7 +109,7 @@ let { deal, onDragStart, onEdit, onDelete } = $props<{
 	{/if}
 
 	<div class="flex justify-between items-end">
-		<span class="text-xs text-slate-400">{deal.daysInStage} วันใน Stage นี้</span>
+		<span class="text-xs text-slate-400">อายุใน Stage: {formatAgeHours(deal.ageHours)}</span>
 
 		<a
 			href="#"

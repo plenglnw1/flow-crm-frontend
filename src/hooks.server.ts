@@ -7,6 +7,7 @@ type MeResponse = {
 	email: string;
 	role: string;
 	team_id?: string | null;
+	team_name?: string | null;
 	organization_id?: string | null;
 };
 
@@ -32,7 +33,15 @@ async function fetchMe(cookieHeader: string | null): Promise<MeResponse | null> 
 }
 
 // Include /deals so layout can show the sidebar (locals.user) and enforce Sales-only app rules.
-const protectedPrefixes = ['/pipeline-stages', '/pipeline-templates', '/deals', '/profile', '/logout', '/customers'];
+const protectedPrefixes = [
+	'/pipeline-stages',
+	'/pipeline-templates',
+	'/deals',
+	'/profile',
+	'/logout',
+	'/customers',
+	'/action-stream'
+];
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const cookieHeader = event.request.headers.get('cookie');

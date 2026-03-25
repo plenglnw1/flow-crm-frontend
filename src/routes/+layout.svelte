@@ -4,7 +4,7 @@
 	import AppSidebar from '$lib/components/layout/AppSidebar.svelte';
 
 	type LayoutData = {
-		user?: { id: string; name: string; email: string; role: string } | null;
+		user?: { id: string; name: string; email: string; role: string; team_name?: string | null } | null;
 	};
 
 	let { data, children } = $props<{ data: LayoutData; children: unknown }>();

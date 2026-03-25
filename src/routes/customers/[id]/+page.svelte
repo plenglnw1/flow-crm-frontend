@@ -25,6 +25,27 @@
 		const cleanId = lineId.replace('@', '');
 		return `https://line.me/ti/p/~${cleanId}`;
 	}
+
+	function formatTags(tags: unknown): string {
+		if (!tags) return '-';
+		// Defensive: avoid printing function source into UI
+		if (typeof tags === 'function') return '-';
+
+		if (Array.isArray(tags)) return tags.join(', ');
+
+		if (typeof tags === 'string') {
+			// Sometimes backend may store tags as JSON string
+			try {
+				const parsed = JSON.parse(tags) as unknown;
+				if (Array.isArray(parsed)) return parsed.join(', ');
+			} catch {
+				// ignore JSON parse failure
+			}
+			return tags;
+		}
+
+		return String(tags);
+	}
 </script>
 
 <div class="max-w-4xl mx-auto py-6">
@@ -54,22 +75,39 @@
 				</div>
 			</div>
 
-			<a
-				href={getLineLink(customer.line_id)}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition-colors shadow-sm gap-2 whitespace-nowrap"
-			>
-				<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-					/>
-				</svg>
-				Open in LINE
-			</a>
+			<div class="flex items-center gap-3">
+				<a
+					href={`/customers/${customer.id}/edit`}
+					class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors shadow-sm gap-2 whitespace-nowrap"
+				>
+					<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11 20H7v-4l9.586-9.586z"
+						/>
+					</svg>
+					แก้ไข
+				</a>
+
+				<a
+					href={getLineLink(customer.line_id)}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition-colors shadow-sm gap-2 whitespace-nowrap"
+				>
+					<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+						/>
+					</svg>
+					Open in LINE
+				</a>
+			</div>
 		</div>
 
 		<!-- Info Grid -->
@@ -148,13 +186,7 @@
 				</div>
 				<div>
 					<p class="text-xs text-slate-500 font-medium mb-1">ประเภทธุรกิจ / แท็ก</p>
-					<p class="font-semibold text-slate-900">
-						{#if customer.tags}
-							{Array.isArray(customer.tags) ? customer.tags.join(', ') : customer.tags}
-						{:else}
-							-
-						{/if}
-					</p>
+					<p class="font-semibold text-slate-900">{formatTags(customer.tags)}</p>
 				</div>
 			</div>
 		</div>

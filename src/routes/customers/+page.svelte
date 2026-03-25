@@ -13,6 +13,7 @@
 	let totalCustomers = $derived(data.customers?.total ?? 0);
 
 	let searchQuery = $state($page.url.searchParams.get('search') ?? '');
+	let statusQuery = $state($page.url.searchParams.get('status') ?? '');
 	let searchTimeout: ReturnType<typeof setTimeout>;
 
 	let selectedCustomer = $state<CustomerListItem | null>(null);
@@ -38,6 +39,19 @@
 			}
 			goto(url, { keepFocus: true, replaceState: true });
 		}, 300);
+	}
+
+	function handleStatusChange(e: Event) {
+		const target = e.target as HTMLSelectElement;
+		statusQuery = target.value;
+
+		const url = new URL($page.url);
+		if (statusQuery) {
+			url.searchParams.set('status', statusQuery);
+		} else {
+			url.searchParams.delete('status');
+		}
+		goto(url, { keepFocus: true, replaceState: true });
 	}
 
 	function selectCustomer(customer: CustomerListItem) {
@@ -88,19 +102,15 @@
 						oninput={handleSearch}
 					/>
 				</div>
-				<button
+				<select
 					class="inline-flex items-center gap-x-1.5 rounded-lg bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-slate-50 shadow-sm transition-colors shrink-0"
+					bind:value={statusQuery}
+					onchange={handleStatusChange}
 				>
-					<svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-						/>
-					</svg>
-					Filter
-				</button>
+					<option value="">ทั้งหมด</option>
+					<option value="active">Active</option>
+					<option value="inactive">Inactive</option>
+				</select>
 			</div>
 
 			<!-- Customer List Scrollable Area -->

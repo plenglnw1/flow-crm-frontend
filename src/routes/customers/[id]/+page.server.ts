@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ params, request }) => {
     const headers: Record<string, string> = { Accept: 'application/json' };
     if (cookieHeader) headers.cookie = cookieHeader;
 
-    const res = await fetch(`${API_URL}/api/customers/${params.id}`, {
+    const res = await fetch(`${API_URL}/api/sales/customers/${params.id}`, {
         headers,
         redirect: 'manual'
     });

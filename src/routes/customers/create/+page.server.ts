@@ -1,10 +1,17 @@
 import { API_URL } from '$env/static/private';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
+import { getBackendCsrf, backendCookieHeaderFromRequest } from '$lib/server/backend-proxy.server';
 
 export const actions: Actions = {
     default: async ({ request }) => {
-        const cookieHeader = request.headers.get('cookie');
+        const cookieHeader = backendCookieHeaderFromRequest(request);
+        const csrfToken = await getBackendCsrf(cookieHeader);
+
+        if (!API_URL || !csrfToken) {
+            return fail(500, { message: 'Missing API_URL or CSRF token' });
+        }
+
         const formData = await request.formData();
 
         // Basic validation for required fields according to spec
@@ -22,12 +29,16 @@ export const actions: Actions = {
         const isActive = formData.get('is_active');
         formData.set('is_active', isActive ? '1' : '0');
 
+        // Laravel CSRF token + cookie forwarding
+        formData.set('_token', csrfToken);
+
         try {
             // Forward the FormData to Backend
-            const res = await fetch(`${API_URL}/api/customers`, {
+            const res = await fetch(`${API_URL}/api/sales/customers`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
                     ...(cookieHeader ? { cookie: cookieHeader } : {})
                 },
                 body: formData,

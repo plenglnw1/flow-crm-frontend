@@ -68,7 +68,8 @@ export const actions: Actions = {
 		const looksLikeSuccess = location.includes('/pipeline-stages');
 
 		if (!res.ok && res.status !== 302 && res.status !== 303) {
-			return fail(res.status, { message: 'Failed to create deal' });
+			const message = res.status === 403 ? 'ไม่มีสิทธิ์สร้างดีลให้ทีมอื่น' : 'Failed to create deal';
+			return fail(res.status, { message });
 		}
 
 		if ((res.status === 302 || res.status === 303) && !looksLikeSuccess) {

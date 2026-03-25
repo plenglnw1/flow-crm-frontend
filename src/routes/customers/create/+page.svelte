@@ -10,17 +10,26 @@
 	let { form } = $props<{ form: FormState | null }>();
 
 	let isLoading = $state(false);
+	let avatarInput: HTMLInputElement | null = null;
 	let previewImage = $state<string | null>(null);
 
 	function handleImageChange(event: Event) {
 		const input = event.target as HTMLInputElement;
 		const file = input.files?.[0];
 		if (file) {
-			// Convert image for preview
+			// Preview only: keep the file locally in browser memory.
+			// Revoke previous blob URL to avoid leaking memory.
+			if (previewImage?.startsWith('blob:')) URL.revokeObjectURL(previewImage);
 			previewImage = URL.createObjectURL(file);
 		} else {
 			previewImage = null;
 		}
+	}
+
+	function clearSelectedAvatar() {
+		if (previewImage?.startsWith('blob:')) URL.revokeObjectURL(previewImage);
+		previewImage = null;
+		if (avatarInput) avatarInput.value = '';
 	}
 </script>
 
@@ -116,10 +125,21 @@
 								type="file"
 								accept="image/*"
 								class="sr-only"
+								bind:this={avatarInput}
 								onchange={handleImageChange}
 							/>
 						</label>
 						<p class="text-xs text-slate-400 mt-2">JPG, PNG, GIF</p>
+
+						{#if previewImage}
+							<button
+								type="button"
+								onclick={clearSelectedAvatar}
+								class="mt-3 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+							>
+								ลบรูปที่เลือก
+							</button>
+						{/if}
 					</div>
 				</div>
 			</div>

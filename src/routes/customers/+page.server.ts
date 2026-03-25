@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ request, url }) => {
     if (search) query.set('search', search);
     if (status) query.set('status', status);
 
-    const res = await fetch(`${API_URL}/api/customers?${query.toString()}`, {
+    const res = await fetch(`${API_URL}/api/sales/customers?${query.toString()}`, {
         headers,
         redirect: 'manual'
     });

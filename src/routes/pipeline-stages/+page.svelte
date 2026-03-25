@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import PipelineColumn, { type Stage } from '$lib/components/pipeline/PipelineColumn.svelte';
 	import type { DealCard } from '$lib/components/pipeline/PipelineDealCard.svelte';
 
@@ -7,16 +8,43 @@
 	type BackendDeal = {
 		id: string;
 		stage_id: string | null;
+		stage_position?: number | null;
 		name: string;
 		value: number;
 		next_action?: string | null;
 		expected_close_date?: string | null;
 		is_stale: boolean;
 		days_in_stage: number;
+		age_hours: number;
 		customer: { name: string | null; organization_name: string | null; nickname: string | null };
 	};
 
-	let { data }: { data: { stages: BackendStage[]; deals: BackendDeal[] } } = $props();
+	let { data }: {
+		data: {
+			scope: string;
+			read_only: boolean;
+			my_team_id: string | null;
+			active_team_id: string | null;
+			teams: Array<{ id: string; name: string }>;
+			stages: BackendStage[];
+			deals: BackendDeal[];
+		};
+	} = $props();
+
+	const readOnly = data.read_only;
+	const myTeamId = data.my_team_id;
+	const myTeamName =
+		data.teams.find((t) => t.id === myTeamId)?.name ?? (myTeamId ? `Team ${myTeamId}` : '-');
+	const activeScope = data.scope;
+	const activeTeamId = data.active_team_id;
+	const scopeSelectValue =
+		activeScope === 'mine'
+			? 'mine'
+			: activeScope === 'all'
+				? 'all'
+				: activeTeamId
+					? `team:${activeTeamId}`
+					: 'mine';
 
 	function dotColorClassByStageName(stageName: string) {
 		// Stage name in seed is often like "ลูกค้า (Prospect)" so we match by keyword.
@@ -45,7 +73,7 @@
 			isStale: d.is_stale,
 			nextAction: d.next_action ?? undefined,
 			expectedCloseDate: formatExpectedCloseDate(d.expected_close_date),
-			daysInStage: d.days_in_stage
+			ageHours: d.age_hours
 		};
 	}
 
@@ -54,6 +82,30 @@
 	let showToast = $state(false);
 	let toastMessage = $state('');
 
+	let dealSearch = $state('');
+	let onlyStaleDeals = $state(false);
+	let stageFilterId = $state<string>('all');
+
+	function computeFilteredDeals(): BackendDeal[] {
+		let deals = data.deals as BackendDeal[];
+		const q = dealSearch.trim().toLowerCase();
+
+		if (q) {
+			deals = deals.filter((d) => {
+				const name = (d.customer.name ?? d.customer.nickname ?? '').toLowerCase();
+				return name.includes(q);
+			});
+		}
+
+		if (onlyStaleDeals) {
+			deals = deals.filter((d) => d.is_stale);
+		}
+
+		return deals;
+	}
+
+	const filteredDeals = $derived(computeFilteredDeals());
+
 	type StageWithDeals = Stage & { dotColorClass: string; deals: DealCard[] };
 
 	function computeStagesWithDeals(): StageWithDeals[] {
@@ -61,8 +113,10 @@
 			.slice()
 			.sort((a: BackendStage, b: BackendStage) => a.position - b.position)
 			.map((s: BackendStage) => {
-				const deals = data.deals
-					.filter((d: BackendDeal) => d.stage_id === s.id)
+				const deals = filteredDeals
+					.filter((d: BackendDeal) =>
+						d.stage_position !== null && d.stage_position !== undefined ? d.stage_position === s.position : d.stage_id === s.id
+					)
 					.map((d: BackendDeal) => mapDeal(d));
 
 				return {
@@ -77,8 +131,15 @@
 
 	const stagesWithDeals = $derived(computeStagesWithDeals());
 
+	function computeStagesToRender(): StageWithDeals[] {
+		if (stageFilterId === 'all') return stagesWithDeals;
+		return stagesWithDeals.filter((s) => s.id === stageFilterId);
+	}
+
+	const stagesToRender = $derived(computeStagesToRender());
+
 	const totalValue = $derived(
-		stagesWithDeals.reduce(
+		stagesToRender.reduce(
 			(sum: number, s: StageWithDeals) => sum + s.deals.reduce((ds: number, d: DealCard) => ds + d.value, 0),
 			0
 		)
@@ -117,6 +178,14 @@
 
 	function addDeal(stageId: string) {
 		goto(`/deals/create?stage_id=${encodeURIComponent(stageId)}`);
+	}
+
+	function setPipelineScope(nextScope: 'mine' | 'all' | 'team', nextTeamId?: string) {
+		const url = new URL($page.url);
+		url.searchParams.set('scope', nextScope);
+		if (nextScope === 'team' && nextTeamId) url.searchParams.set('team_id', nextTeamId);
+		else url.searchParams.delete('team_id');
+		goto(url, { keepFocus: true, replaceState: true });
 	}
 
 	async function drop(event: DragEvent, targetStageId: string, targetIndex: number) {
@@ -171,44 +240,95 @@
 		</div>
 
 		<div class="flex items-center gap-3">
-			<button
-				type="button"
-				class="px-4 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2"
-				on:click={() => goto('/pipeline-stages/create')}
-			>
-				<svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-				</svg>
-				เพิ่ม Stage
-			</button>
+			{#if !readOnly}
+				<button
+					type="button"
+					class="px-4 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2"
+					onclick={() => goto('/pipeline-stages/create')}
+				>
+					<svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+					</svg>
+					เพิ่ม Stage
+				</button>
 
-			<button
-				type="button"
-				class="bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 flex items-center gap-2 shadow-lg shadow-slate-900/20 transition-all font-medium"
-				on:click={() => goto('/deals/create')}
+				<button
+					type="button"
+					class="bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 flex items-center gap-2 shadow-lg shadow-slate-900/20 transition-all font-medium"
+					onclick={() => goto('/deals/create')}
+				>
+					<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+					</svg>
+					เพิ่มดีลใหม่
+				</button>
+			{/if}
+
+			<select
+				class="px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-medium"
+				value={scopeSelectValue}
+				onchange={(e) => {
+					const val = (e.currentTarget as HTMLSelectElement).value;
+					if (val === 'mine') setPipelineScope('mine');
+					else if (val === 'all') setPipelineScope('all');
+					else if (val.startsWith('team:')) setPipelineScope('team', val.split(':')[1]);
+				}}
 			>
-				<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-				</svg>
-				เพิ่มดีลใหม่
-			</button>
+				<option value="mine">ของฉัน: {myTeamName}</option>
+				<option value="all">All teams</option>
+				{#each data.teams as t (t.id)}
+					{#if t.id !== myTeamId}
+						<option value={`team:${t.id}`}>ทีม: {t.name}</option>
+					{/if}
+				{/each}
+			</select>
+		</div>
+	</div>
+
+	<div class="px-6 pb-4 -mt-1">
+		<div class="flex flex-wrap items-center gap-3">
+			<input
+				type="text"
+				placeholder="ค้นหาดีลจากชื่อลูกค้า..."
+				class="px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-medium w-64"
+				value={dealSearch}
+				oninput={(e) => {
+					dealSearch = (e.currentTarget as HTMLInputElement).value;
+				}}
+			/>
+
+			<label class="flex items-center gap-2 text-sm text-slate-700 font-medium">
+				<input type="checkbox" bind:checked={onlyStaleDeals} />
+				เฉพาะ “ต้องทำต่อ”
+			</label>
+
+			<select
+				class="px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-medium"
+				value={stageFilterId}
+				onchange={(e) => (stageFilterId = (e.currentTarget as HTMLSelectElement).value)}
+			>
+				<option value="all">All stages</option>
+				{#each data.stages as s (s.id)}
+					<option value={s.id}>{s.name}</option>
+				{/each}
+			</select>
 		</div>
 	</div>
 
 	<div class="p-6 overflow-x-auto">
 		<div class="flex gap-6 min-w-max pb-10">
-			{#each stagesWithDeals as stage (stage.id)}
+			{#each stagesToRender as stage (stage.id)}
 				<PipelineColumn
 					stage={{ id: stage.id, name: stage.name, position: stage.position }}
 					deals={stage.deals}
 					dotColorClass={stage.dotColorClass}
-					invalidDrop={isInvalidDrop(stage.position)}
-					onDrop={drop}
-					onDragOver={dragOver}
-					onDealDragStart={startDrag}
-					onAddDeal={addDeal}
-					onEdit={editDeal}
-					onDelete={deleteDeal}
+					invalidDrop={readOnly ? true : isInvalidDrop(stage.position)}
+					onDrop={readOnly ? () => {} : drop}
+					onDragOver={readOnly ? () => {} : dragOver}
+					onDealDragStart={readOnly ? () => {} : startDrag}
+					onAddDeal={readOnly ? () => {} : addDeal}
+					onEdit={readOnly ? undefined : editDeal}
+					onDelete={readOnly ? undefined : deleteDeal}
 				/>
 			{/each}
 		</div>
