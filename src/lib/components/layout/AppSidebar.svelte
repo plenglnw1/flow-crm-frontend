@@ -10,6 +10,11 @@
 
 	const links = [
 		{
+			href: '/dashboard',
+			label: 'Dashboard',
+			icon: 'generic'
+		},
+		{
 			href: '/customers',
 			label: 'Customers',
 			icon: 'customers'
@@ -24,11 +29,6 @@
 			label: 'Pipeline',
 			icon: 'pipeline'
 		},
-		{
-			href: '/pipeline-templates',
-			label: 'Pipeline Template',
-			icon: 'template'
-		}
 	] as const;
 </script>
 
