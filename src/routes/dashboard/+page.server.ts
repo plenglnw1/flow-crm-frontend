@@ -51,5 +51,15 @@ export const load: PageServerLoad = async ({ request }) => {
 			line_id?: string | null;
 			script?: string;
 		}>;
+    target_progress?: {
+			has_target: boolean;
+			target_amount: number;
+			achieved_amount: number;
+			progress_percent: number;
+			revenue_today: number;
+			pace_amount_by_today: number;
+			period_month: number;
+			period_year: number;
+		};
 	};
 };
