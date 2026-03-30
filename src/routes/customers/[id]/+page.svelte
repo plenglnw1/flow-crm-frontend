@@ -5,8 +5,7 @@
 
 	let customer = $derived(data.customer);
 	let stats = $derived(data.statistics);
-	// activities are loaded latest-first from the backend
-	let activities = $derived(data.activities || []);
+	let deals = $derived(data.deals || []);
 
 	// Utility to format date nicely
 	function formatDate(dateString: string | null) {
@@ -45,6 +44,48 @@
 		}
 
 		return String(tags);
+	}
+
+	let expandedDealId = $state<string | null>(null);
+
+	$effect(() => {
+		if (!expandedDealId && deals.length > 0) expandedDealId = deals[0]?.id ?? null;
+	});
+
+	type DealActivity = {
+		id: string;
+		title: string;
+		type?: string;
+		description?: string | null;
+		created_at?: string | null;
+		user_name?: string | null;
+		is_progress_task?: boolean;
+		is_stage_progress?: boolean;
+	};
+
+	function buildTimelineGroups(activities: DealActivity[]): { progress: DealActivity | null; items: DealActivity[] }[] {
+		const ordered = [...(activities ?? [])].sort((a, b) => {
+			const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+			const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+			return ta - tb;
+		});
+
+		const groups: { progress: DealActivity | null; items: DealActivity[] }[] = [];
+		let current: { progress: DealActivity | null; items: DealActivity[] } | null = null;
+
+		for (const a of ordered) {
+			const isProgress = Boolean(a.is_progress_task || a.is_stage_progress);
+			if (isProgress) {
+				if (current) groups.push(current);
+				current = { progress: a, items: [] };
+			} else {
+				if (!current) current = { progress: null, items: [] };
+				current.items.push(a);
+			}
+		}
+
+		if (current) groups.push(current);
+		return groups;
 	}
 </script>
 
@@ -96,6 +137,9 @@
 					target="_blank"
 					rel="noopener noreferrer"
 					class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition-colors shadow-sm gap-2 whitespace-nowrap"
+					onclick={(e) => {
+						if (!customer.line_id) e.preventDefault();
+					}}
 				>
 					<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path
@@ -126,7 +170,12 @@
 				</div>
 				<div>
 					<p class="text-xs text-slate-500 font-medium mb-1">LINE ID</p>
-					<p class="font-semibold text-slate-900">{customer.line_id || '-'}</p>
+					{#if customer.line_id}
+						<p class="font-semibold text-slate-900">{customer.line_id}</p>
+					{:else}
+						<p class="font-semibold text-slate-900">ยังไม่ถูกตั้งค่า</p>
+						<p class="text-xs text-slate-500 mt-1">กรุณาไปกด `แก้ไข` เพื่อใส่ LINE ID</p>
+					{/if}
 				</div>
 			</div>
 
@@ -220,64 +269,87 @@
 		</div>
 	</div>
 
-	<!-- Activity Timeline -->
+	<!-- Deal Timelines -->
 	<div>
-		<h3 class="text-xl font-bold text-slate-900 mb-6 px-1">ประวัติกิจกรรม</h3>
+		<h3 class="text-xl font-bold text-slate-900 mb-6 px-1">Timeline แยกตามดีล</h3>
 
 		<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
-			{#if activities.length === 0}
-				<div class="text-center py-10 text-slate-500">ยังไม่มีประวัติกิจกรรมกับลูกค้าท่านนี้</div>
+			{#if deals.length === 0}
+				<div class="text-center py-10 text-slate-500">ยังไม่มีดีลสำหรับลูกค้าท่านนี้</div>
 			{:else}
-				<div class="relative border-l border-slate-200 ml-4 space-y-8">
-					{#each activities as activity}
-						<div class="relative pl-8">
-							<!-- Timeline dot -->
-							<span
-								class="absolute -left-3.5 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 ring-4 ring-white"
+				<div class="space-y-4">
+					{#each deals as deal (deal.id)}
+						<div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
+							<button
+								type="button"
+								onclick={() => (expandedDealId = deal.id)}
+								class="w-full px-4 py-3 flex items-start justify-between gap-4 text-left hover:bg-slate-50 transition-colors"
 							>
-								<svg
-									class="h-4 w-4 text-emerald-500"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<!-- Choosing an icon based on activity type conceptually -->
-									{#if activity.type?.includes('call')}
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-										/>
-									{:else if activity.type?.includes('message') || activity.type?.includes('email')}
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-										/>
-									{:else}
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-										/>
-									{/if}
-								</svg>
-							</span>
+								<div class="min-w-0">
+									<p class="font-bold text-slate-900 truncate">{deal.name}</p>
+									<p class="text-xs text-slate-500 mt-1">
+										Stage: <span class="font-semibold">{deal.stage?.name || '-'}</span>
+									</p>
+									<p class="text-xs text-slate-500 mt-1">
+										Next: <span class="font-semibold">{deal.next_action || '-'}</span>
+									</p>
+								</div>
+								<div class="text-right shrink-0">
+									<p class="text-xs text-slate-400">อัปเดตล่าสุด</p>
+									<p class="font-semibold text-slate-800">{deal.updated_at ? formatDate(deal.updated_at) : '-'}</p>
+								</div>
+							</button>
 
-							<div class="flex flex-col mb-1 sm:flex-row sm:items-center sm:justify-between gap-1">
-								<h4 class="text-base font-bold text-slate-900">
-									{activity.title || activity.description || 'ทำกิจกรรม'}
-								</h4>
-								<time class="text-sm font-medium text-slate-400"
-									>{formatDate(activity.created_at)}</time
-								>
-							</div>
-							<p class="text-slate-600 text-sm">{activity.description}</p>
-							{#if activity.user}
-								<p class="text-xs text-slate-400 mt-2 font-medium">ทำโดย: {activity.user.name}</p>
+							{#if expandedDealId === deal.id}
+								<div class="px-4 pb-4 pt-2 border-t border-slate-100">
+									<div class="mb-4">
+										<p class="text-xs text-slate-500 font-medium mb-1">LINE ID</p>
+										<p class="font-semibold text-slate-900">{customer.line_id || '-'}</p>
+									</div>
+
+									<div class="relative border-l-2 border-slate-200 ml-2 pl-4 space-y-6">
+										{#if deal.activities?.length === 0}
+											<p class="text-sm text-slate-500">ยังไม่มี timeline ของดีลนี้</p>
+										{:else}
+											{#each buildTimelineGroups(deal.activities as any) as g}
+												<div class="relative">
+													<span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white bg-emerald-500"></span>
+													<div class="ml-3">
+														{#if g.progress}
+															<p class="text-sm font-bold text-slate-800">
+																{g.progress.is_stage_progress
+																	? 'Stage Progress'
+																	: g.progress.is_progress_task
+																		? 'Next Action'
+																		: 'Progress'}: {g.progress.title}
+															</p>
+															<p class="text-xs text-slate-500 mt-1">{g.progress.created_at ? formatDate(g.progress.created_at) : '-'}</p>
+														{/if}
+
+														{#if g.items.length > 0}
+															<div class="mt-3 space-y-2">
+																{#each g.items as act}
+																	<div class="bg-slate-50 border border-slate-100 rounded-lg p-3">
+																		<p class="text-sm font-semibold text-slate-900">{act.title}</p>
+																		<p class="text-xs text-slate-500 mt-1">
+																			{act.created_at ? formatDate(act.created_at) : '-'}
+																			{#if act.user_name} • {act.user_name}{/if}
+																		</p>
+																		{#if act.description}
+																			<p class="text-xs text-slate-600 mt-2">{act.description}</p>
+																		{/if}
+																	</div>
+																{/each}
+															</div>
+														{:else}
+															<p class="text-xs text-slate-500 mt-3">ยังไม่มี Activities ในรอบความคืบหน้านี้</p>
+														{/if}
+													</div>
+												</div>
+											{/each}
+										{/if}
+									</div>
+								</div>
 							{/if}
 						</div>
 					{/each}
