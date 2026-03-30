@@ -36,7 +36,8 @@
 					<p class="mt-2 text-slate-500">
 						เข้าสู่ระบบหรือสมัครฝั่งทีมขายที่นี่ · ผู้จัดการใช้เว็บ backend (Laravel) เท่านั้น
 					</p>
-<div class="mt-8 flex flex-col gap-3">
+
+					<div class="mt-8 flex flex-col gap-3">
 						<a
 							href="/login"
 							class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-4 text-base font-bold text-white shadow-lg shadow-slate-900/15 hover:bg-slate-800 transition-all"
@@ -56,3 +57,5 @@
 				</div>
 			</div>
 		</section>
+	</div>
+</div>
