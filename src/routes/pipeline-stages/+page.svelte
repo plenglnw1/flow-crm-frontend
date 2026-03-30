@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { customerFormalLabel } from '$lib/customer-display';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import PipelineColumn, { type Stage } from '$lib/components/pipeline/PipelineColumn.svelte';
@@ -92,8 +93,8 @@
 
 		if (q) {
 			deals = deals.filter((d) => {
-				const name = (d.customer.name ?? d.customer.nickname ?? '').toLowerCase();
-				return name.includes(q);
+				const hay = `${d.customer.name ?? ''} ${d.customer.nickname ?? ''}`.toLowerCase();
+				return hay.includes(q);
 			});
 		}
 

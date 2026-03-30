@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { customerFormalLabel, customerNicknameOrNull } from '$lib/customer-display';
 
 	type ActivityPriorityKey = 'urgent' | 'medium' | 'normal';
 	type Activity = {
@@ -147,7 +148,7 @@
 								</span>
 								<h3 class="font-bold text-slate-800">
 									<span class="text-emerald-600">[{a.action_type}]</span>
-									{a.customer_nickname}
+									{customerFormalLabel(a.customer_name)}
 								</h3>
 							</div>
 							<svg class="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -201,7 +202,7 @@
 
 							<h2 class="text-2xl font-bold text-slate-800">
 								<span class="text-emerald-500">[{activeActivity.action_type}]</span>
-								{activeActivity.customer_name}
+																{customerFormalLabel(activeActivity.customer_name)}
 							</h2>
 							<p class="text-slate-500 mt-1">{activeActivity.title}</p>
 						</div>
@@ -215,7 +216,9 @@
 					<div class="grid grid-cols-3 gap-4 mb-6">
 						<div class="bg-slate-50 p-4 rounded-xl">
 							<p class="text-xs text-slate-400 mb-1">ชื่อเล่น</p>
-							<p class="font-bold text-slate-800 text-lg">{activeActivity.customer_nickname}</p>
+							<p class="font-bold text-slate-800 text-lg">
+								{customerNicknameOrNull(activeActivity.customer_nickname) ?? '—'}
+							</p>
 						</div>
 						<div class="bg-slate-50 p-4 rounded-xl">
 							<p class="text-xs text-slate-400 mb-1">LINE ID</p>

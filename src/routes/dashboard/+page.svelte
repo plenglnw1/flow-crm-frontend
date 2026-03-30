@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { customerFormalLabel } from '$lib/customer-display';
 	let { data } = $props();
 
 	const stats = data.stats;
@@ -85,7 +86,7 @@
 									<div class="flex items-center gap-2 flex-wrap">
 										<span class={`text-xs px-2 py-0.5 rounded ${priorityBadgeClasses(a.priority_key)}`}>{a.priority_label}</span>
 										<p class="font-bold text-slate-800 truncate">
-											[{a.action_type}] {a.customer_name}
+											[{a.action_type}] {customerFormalLabel(a.customer_name)}
 										</p>
 									</div>
 									<p class="text-sm text-slate-600 mt-1">
