@@ -1,42 +1,30 @@
-# sv
+# FlowCRM — Sales Frontend (SvelteKit)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+แอปหน้าบ้านสำหรับ Sales (Pipeline, ลูกค้า, Action Stream, Dashboard) ทำงานคู่กับ **flow-crm-backend** ผ่าน session cookie ของ Laravel
 
-## Creating a project
+---
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Quick Start — รันด้วย Docker Compose
 
-```sh
-# create a new project
-npx sv create my-app
-```
+1. **โคลน repo**
+   ```bash
+   git clone <url-ของ-repo-นี้>.git
+   cd flow-crm-frontend
+   ```
+2. **สร้างไฟล์สภาพแวดล้อม**  
+   สร้าง `.env` ในโฟลเดอร์โปรเจกต์ (SvelteKit อ่านตัวแปรที่ไม่มี prefix `PUBLIC_` ได้เฉพาะฝั่งเซิร์ฟเวอร์)
+   ```env
+   API_URL="http://host.docker.internal"
+   N8N_URL="https://localhost:5678"
+   ```
 
-To recreate this project with the same configuration:
+3. จากโฟลเดอร์โปรเจกต์:
+   ```bash
+   docker compose up -d
+   ```
+4. แอปจะ map **พอร์ต 3000 → 5173** ใน container — เปิด `http://localhost:3000`
+   
 
-```sh
-# recreate this project
-npx sv@0.12.7 create --template minimal --types ts --add prettier eslint tailwindcss="plugins:forms" devtools-json --install yarn my-app
-```
+5. **ล็อกอิน** — ใช้บัญชี Sales ที่สร้างจาก backend (เช่น `sales1@org1.com` / `password`) ผ่านหน้า `/login`
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+---
