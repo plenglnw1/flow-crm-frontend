@@ -2,13 +2,18 @@
 	import SidebarNavLink from '$lib/components/layout/SidebarNavLink.svelte';
 
 	let { collapsed = $bindable(false), user: _user = null } = $props<{
-		collapsed?: boolean;
-		user?: { name: string; role?: string | null; team_name?: string | null } | null;
-	}>();
+		collapsed?: boolean                                                ;
+		user?: { name: string                                              ; role?: string | null; team_name?: string | null } | null;
+	}>()                                                                ;
 
-	const user = $derived(_user);
+	const user = $derived(_user) ;
 
 	const links = [
+				{
+			href: '/dashboard',
+			label: 'Dashboard',
+			icon: 'generic'
+		},
 		{
 			href: '/customers',
 			label: 'Customers',
@@ -24,12 +29,7 @@
 			label: 'Pipeline',
 			icon: 'pipeline'
 		},
-		{
-			href: '/pipeline-templates',
-			label: 'Pipeline Template',
-			icon: 'template'
-		}
-	] as const;
+	] as const                     ;
 </script>
 
 <aside
@@ -42,7 +42,7 @@
 		class:justify-center={collapsed}
 		class:justify-between={!collapsed}
 	>
-		{#if !collapsed}
+		{                                                                                                                                                                                                   #if !collapsed}
 			<a href="/" class="flex items-center gap-3 overflow-hidden whitespace-nowrap group">
 				<div
 					class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform"
@@ -64,7 +64,7 @@
 			</a>
 		{/if}
 
-		{#if !collapsed}
+		{                                                                                                                                                                    #if !collapsed}
 			<button
 				type="button"
 				onclick={() => (collapsed = true)}
@@ -100,7 +100,7 @@
 	</div>
 
 	<nav class="flex-1 overflow-y-auto p-3 space-y-2">
-		{#each links as link (link.href)}
+		{                                                 #each links as link (link.href)}
 			<SidebarNavLink {collapsed} {...link} />
 		{/each}
 	</nav>
@@ -117,7 +117,7 @@
 					<span>{(user?.name?.[0] ?? 'U').toUpperCase()}</span>
 				</div>
 
-				{#if !collapsed}
+				{                                                                                   #if !collapsed}
 					<div class="flex-1 overflow-hidden">
 						<p class="truncate text-sm font-medium text-white">{user?.name ?? 'User'}</p>
 						<p class="truncate text-xs text-slate-500 capitalize">{user?.role ?? 'user'}</p>
@@ -126,7 +126,7 @@
 				{/if}
 			</a>
 
-			{#if !collapsed}
+			{                                                                                                  #if !collapsed}
 				<form method="POST" action="/logout">
 					<button
 						type="submit"

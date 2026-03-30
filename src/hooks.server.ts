@@ -37,6 +37,7 @@ const protectedPrefixes = [
 	'/pipeline-stages',
 	'/pipeline-templates',
 	'/deals',
+	'/dashboard',
 	'/profile',
 	'/logout',
 	'/customers',
