@@ -9,10 +9,22 @@ export async function subscribeToActivityStream(
 		return () => {};
 	}
 
-	const [{ default: Echo }, { default: Pusher }] = await Promise.all([
-		import('laravel-echo'),
-		import('pusher-js')
-	]);
+	let Echo: any;
+	let Pusher: any;
+	try {
+		// Vite จะพยายาม resolve imports แม้เป็น dynamic import
+		// ถ้า node_modules ยังไม่ติดตั้ง ระบบจะ crash ทันที
+		// ใช้ @vite-ignore เพื่อให้ build ผ่าน และ fallback เป็นไม่ realtime
+		const [echoMod, pusherMod] = await Promise.all([
+			import(/* @vite-ignore */ 'laravel-echo'),
+			import(/* @vite-ignore */ 'pusher-js')
+		]);
+		Echo = (echoMod as any).default ?? echoMod;
+		Pusher = (pusherMod as any).default ?? pusherMod;
+	} catch (err) {
+		console.warn('Realtime libs not available, fallback to polling.', err);
+		return () => {};
+	}
 
 	(globalThis as unknown as { Pusher: typeof Pusher }).Pusher = Pusher;
 
