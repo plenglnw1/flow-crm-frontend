@@ -71,7 +71,7 @@
 	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 		<div>
 			<h1 class="text-2xl font-bold text-slate-900 tracking-tight">Customers</h1>
-			<p class="text-sm text-slate-500 mt-1">ลูกค้าทั้งหมด {totalCustomers} ราย</p>
+			<p class="text-sm text-slate-500 mt-1">{totalCustomers} customers</p>
 		</div>
 		<button
 			type="button"
@@ -81,7 +81,7 @@
 			<svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 			</svg>
-			เพิ่มลูกค้าใหม่
+			Add customer
 		</button>
 	</div>
 
@@ -104,7 +104,7 @@
 					<input
 						type="text"
 						class="block w-full rounded-lg border-0 py-2.5 pl-10 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 shadow-sm bg-white"
-						placeholder="ค้นหาชื่อ, ชื่อเล่น, LINE ID..."
+						placeholder="Search name, nickname, LINE ID…"
 						value={searchQuery}
 						oninput={handleSearch}
 					/>
@@ -114,7 +114,7 @@
 					bind:value={statusQuery}
 					onchange={handleStatusChange}
 				>
-					<option value="">ทั้งหมด</option>
+					<option value="">All</option>
 					<option value="active">Active</option>
 					<option value="inactive">Inactive</option>
 				</select>
@@ -124,7 +124,7 @@
 			<div class="flex-1 overflow-y-auto pr-1 space-y-3 pb-4">
 				{#if customersList.length === 0}
 					<div class="text-center py-10 bg-white rounded-xl border border-slate-200 border-dashed">
-						<p class="text-sm text-slate-500">ไม่พบรายชื่อลูกค้า</p>
+						<p class="text-sm text-slate-500">No customers match</p>
 					</div>
 				{:else}
 					{#each customersList as customer}
@@ -149,9 +149,18 @@
 				>
 					<div class="flex items-center gap-5">
 						<div
-							class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold"
+							class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold overflow-hidden shrink-0"
 						>
-							{customerNameInitial(selectedCustomer.name)}
+							{#if selectedCustomer.avatar_url}
+								<img
+									src={selectedCustomer.avatar_url}
+									alt=""
+									class="w-full h-full object-cover"
+									referrerpolicy="no-referrer"
+								/>
+							{:else}
+								{customerNameInitial(selectedCustomer.name)}
+							{/if}
 						</div>
 						<div>
 							<div class="flex items-center gap-3">
@@ -162,9 +171,9 @@
 							</div>
 							<p class="text-slate-500 mt-1">
 								{#if selectedCustomer.nickname}
-									ชื่อเล่น: {selectedCustomer.nickname} · ข้อมูลเต็มเมื่อกดดูรายละเอียด
+									Nickname: {selectedCustomer.nickname} · open detail for full profile
 								{:else}
-									กดดูรายละเอียดเพื่อแก้ไขชื่อเล่น · LINE · เบอร์
+									Open detail to edit nickname, LINE, or phone
 								{/if}
 							</p>
 						</div>
@@ -234,7 +243,7 @@
 									/>
 								</svg>
 								<div>
-									<p class="text-xs text-slate-500 font-medium mb-1">เบอร์โทร</p>
+									<p class="text-xs text-slate-500 font-medium mb-1">Phone</p>
 									<p class="font-medium text-slate-900">{selectedCustomer.phone_num ?? '—'}</p>
 								</div>
 							</div>
@@ -246,34 +255,34 @@
 							class="rounded-xl border border-slate-200 p-5 flex flex-col items-center justify-center shadow-sm"
 						>
 							<p class="text-2xl font-bold text-emerald-500 mb-1">
-								฿{(selectedCustomer.lifetime_value ?? 0).toLocaleString()}
+								THB {(selectedCustomer.lifetime_value ?? 0).toLocaleString()}
 							</p>
-							<p class="text-xs text-slate-500 font-medium">ยอดขายรวม</p>
+							<p class="text-xs text-slate-500 font-medium">Lifetime value</p>
 						</div>
 						<div
 							class="rounded-xl border border-slate-200 p-5 flex flex-col items-center justify-center shadow-sm"
 						>
 							<p class="text-2xl font-bold text-slate-900 mb-1">-</p>
-							<p class="text-xs text-slate-500 font-medium">จำนวนดีล</p>
+							<p class="text-xs text-slate-500 font-medium">Deals</p>
 						</div>
 						<div
 							class="rounded-xl border border-slate-200 p-5 flex flex-col items-center justify-center shadow-sm"
 						>
 							<p class="text-xl font-bold text-slate-900 mb-1">-</p>
-							<p class="text-xs text-slate-500 font-medium">ติดต่อล่าสุด</p>
+							<p class="text-xs text-slate-500 font-medium">Last contact</p>
 						</div>
 					</div>
 
 					<!-- Link to view full details wrapper for step 4 later -->
 					<div class="text-center py-4">
 						<p class="text-sm text-slate-500 mb-3">
-							แสดงข้อมูลเบื้องต้น หากต้องการรับข้อมูลทั้งหมดสามารถกดปุ่มนี้
+							Summary only — use the button below for the full record
 						</p>
 						<button
 							class="text-emerald-600 font-medium hover:text-emerald-700 transition"
 							onclick={() => goto(`/customers/${selectedCustomer?.id}`)}
 						>
-							ดูข้อมูลลูกค้าและกิจกรรมแบบเต็ม &rarr;
+							Full customer profile and activity &rarr;
 						</button>
 					</div>
 				</div>
@@ -292,8 +301,8 @@
 							d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
 						/>
 					</svg>
-					<p class="text-lg font-medium text-slate-500">เลือกรายชื่อลูกค้าเพื่อดูรายละเอียด</p>
-					<p class="text-sm mt-1">คลิกที่การ์ดลูกค้าจากรายการด้านซ้าย</p>
+					<p class="text-lg font-medium text-slate-500">Select a customer to view details</p>
+					<p class="text-sm mt-1">Click a card in the list on the left</p>
 				</div>
 			{/if}
 		</div>

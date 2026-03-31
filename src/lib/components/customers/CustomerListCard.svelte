@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { customerFormalLabel } from '$lib/customer-display';
 	import CustomerStatusBadge from './CustomerStatusBadge.svelte';
 
 	export type CustomerListItem = {
@@ -8,6 +9,9 @@
 		is_active: boolean;
 		lifetime_value?: number;
 		organization_name?: string | null;
+		phone_num?: string | null;
+		line_id?: string | null;
+		avatar_url?: string | null;
 	};
 
 	let {
@@ -32,11 +36,20 @@
 >
 	<div class="flex items-center gap-4">
 		<div
-			class="w-12 h-12 shrink-0 rounded-full flex items-center justify-center font-bold text-lg {isSelected
+			class="w-12 h-12 shrink-0 rounded-full flex items-center justify-center font-bold text-lg overflow-hidden {isSelected
 				? 'bg-emerald-100 text-emerald-700'
 				: 'bg-slate-100 text-slate-600 group-hover:bg-emerald-50 group-hover:text-emerald-600'} transition-colors"
 		>
-			{initials}
+			{#if customer.avatar_url}
+				<img
+					src={customer.avatar_url}
+					alt=""
+					class="w-full h-full object-cover"
+					referrerpolicy="no-referrer"
+				/>
+			{:else}
+				{initials}
+			{/if}
 		</div>
 		<div class="flex flex-col gap-1">
 			<div class="flex items-center gap-2">
@@ -46,8 +59,8 @@
 				<CustomerStatusBadge isActive={customer.is_active} />
 			</div>
 			<span class="text-sm text-slate-500 leading-none truncate max-w-[180px]">
-				คุณ{customer.name}
-				{customer.organization_name ? `(${customer.organization_name})` : ''}
+				{customerFormalLabel(customer.name)}
+				{customer.organization_name ? ` (${customer.organization_name})` : ''}
 			</span>
 		</div>
 	</div>
@@ -63,7 +76,7 @@
 			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 		</svg>
 		<span class="font-semibold {isSelected ? 'text-emerald-600' : 'text-emerald-500'}">
-			฿{(customer.lifetime_value ?? 0).toLocaleString()}
+			THB {(customer.lifetime_value ?? 0).toLocaleString()}
 		</span>
 	</div>
 </button>
