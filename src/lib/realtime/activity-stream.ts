@@ -32,9 +32,7 @@ export async function subscribeToActivityStream(
 	const broadcastHost = publicEnv.PUBLIC_BROADCAST_HOST || window.location.hostname;
 	const wsPort = Number(publicEnv.PUBLIC_BROADCAST_PORT || '6001');
 	const forceTLS = (publicEnv.PUBLIC_BROADCAST_SCHEME || 'http') === 'https';
-	const apiUrl = (publicEnv.PUBLIC_API_URL || '').replace(/\/$/, '');
-
-	if (!broadcastAppKey || !apiUrl) {
+	if (!broadcastAppKey) {
 		return () => {};
 	}
 
@@ -46,7 +44,8 @@ export async function subscribeToActivityStream(
 		wssPort: wsPort,
 		forceTLS,
 		enabledTransports: ['ws', 'wss'],
-		authEndpoint: `${apiUrl}/broadcasting/auth`,
+		// Use same-origin SvelteKit endpoint so browser cookies work cross-origin.
+		authEndpoint: '/broadcasting/auth',
 		withCredentials: true
 	});
 
