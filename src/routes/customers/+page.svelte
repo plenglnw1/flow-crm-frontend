@@ -262,13 +262,17 @@
 						<div
 							class="rounded-xl border border-slate-200 p-5 flex flex-col items-center justify-center shadow-sm"
 						>
-							<p class="text-2xl font-bold text-slate-900 mb-1">-</p>
+							<p class="text-2xl font-bold text-slate-900 mb-1">
+								{selectedCustomer.total_deals ?? 0}
+							</p>
 							<p class="text-xs text-slate-500 font-medium">Deals</p>
 						</div>
 						<div
 							class="rounded-xl border border-slate-200 p-5 flex flex-col items-center justify-center shadow-sm"
 						>
-							<p class="text-xl font-bold text-slate-900 mb-1">-</p>
+							<p class="text-xl font-bold text-slate-900 mb-1">
+								{selectedCustomer.last_contacted_diff_human ?? '—'}
+							</p>
 							<p class="text-xs text-slate-500 font-medium">Last contact</p>
 						</div>
 					</div>
