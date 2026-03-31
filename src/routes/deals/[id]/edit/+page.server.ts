@@ -71,7 +71,7 @@ export const actions: Actions = {
 		if (!res.ok && res.status !== 302 && res.status !== 303) {
 			const message =
 				res.status === 403
-					? 'ไม่มีสิทธิ์แก้ไขดีลนี้'
+					? 'You cannot edit this deal'
 					: 'Failed to update deal';
 			return fail(res.status, { message });
 		}
@@ -117,7 +117,7 @@ export const actions: Actions = {
 		if (!res.ok && res.status !== 302 && res.status !== 303) {
 			const message =
 				res.status === 403
-					? 'ไม่มีสิทธิ์ลบดีลนี้'
+					? 'You cannot delete this deal'
 					: 'Failed to delete deal';
 			return fail(res.status, { message });
 		}

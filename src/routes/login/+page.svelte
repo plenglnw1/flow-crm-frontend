@@ -128,8 +128,8 @@
 			</div>
 
 			<p class="text-center text-sm text-slate-500 pt-4">
-				ยังไม่มีบัญชี Sales?
-				<a href="/register" class="text-emerald-600 font-semibold hover:underline">สมัครด้วยรหัสเชิญ</a>
+				New to FlowCRM?
+				<a href="/register" class="text-emerald-600 font-semibold hover:underline">Register with invite code</a>
 			</p>
 		</form>
 	</div>

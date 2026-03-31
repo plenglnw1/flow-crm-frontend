@@ -1,30 +1,35 @@
-# FlowCRM — Sales Frontend (SvelteKit)
+# FlowCRM — Sales frontend (SvelteKit)
 
-แอปหน้าบ้านสำหรับ Sales (Pipeline, ลูกค้า, Action Stream, Dashboard) ทำงานคู่กับ **flow-crm-backend** ผ่าน session cookie ของ Laravel
+Sales-facing app (pipeline, customers, action stream, dashboard). It works with **flow-crm-backend** using Laravel’s session cookie.
 
 ---
 
-## Quick Start — รันด้วย Docker Compose
+## Quick start (Docker Compose)
 
-1. **โคลน repo**
+1. **Clone the repo**
+
    ```bash
-   git clone <url-ของ-repo-นี้>.git
+   git clone <repository-url>.git
    cd flow-crm-frontend
    ```
-2. **สร้างไฟล์สภาพแวดล้อม**  
-   สร้าง `.env` ในโฟลเดอร์โปรเจกต์ (SvelteKit อ่านตัวแปรที่ไม่มี prefix `PUBLIC_` ได้เฉพาะฝั่งเซิร์ฟเวอร์)
+
+2. **Environment**
+
+   Create `.env` in the project root (server-side SvelteKit can read variables without the `PUBLIC_` prefix).
+
    ```env
    API_URL="http://host.docker.internal"
    N8N_URL="https://localhost:5678"
    ```
 
-3. จากโฟลเดอร์โปรเจกต์:
+3. From the project directory:
+
    ```bash
    docker compose up -d
    ```
-4. แอปจะ map **พอร์ต 3000 → 5173** ใน container — เปิด `http://localhost:3000`
-   
 
-5. **ล็อกอิน** — ใช้บัญชี Sales ที่สร้างจาก backend (เช่น `sales1@org1.com` / `password`) ผ่านหน้า `/login`
+4. The app maps **port 3000 → 5173** inside the container — open `http://localhost:3000`.
+
+5. **Sign in** with a Sales account from the backend (e.g. `sales1@org1.com` / `password`) on `/login`.
 
 ---

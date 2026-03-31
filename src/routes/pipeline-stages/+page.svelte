@@ -49,7 +49,7 @@
 					: 'mine';
 
 	function dotColorClassByStageName(stageName: string) {
-		// Stage name in seed is often like "ลูกค้า (Prospect)" so we match by keyword.
+		// Stage names in seed may mix Thai and English; match by keyword.
 		const s = stageName.toLowerCase();
 		if (s.includes('prospect')) return 'bg-gray-400';
 		if (s.includes('contacted')) return 'bg-emerald-300';
@@ -198,7 +198,7 @@
 		if (!draggedItem || sourceStageIndex === null) return;
 
 		if (targetIndex < sourceStageIndex) {
-			triggerToast('ห้ามย้อนสถานะการขาย เพื่อรักษาความถูกต้องของ Process');
+			triggerToast('Cannot move a deal to an earlier stage');
 			return;
 		}
 		if (targetIndex === sourceStageIndex) return;
@@ -210,7 +210,7 @@
 		});
 
 		if (!res.ok) {
-			triggerToast('ไม่สามารถย้ายดีลได้ กรุณาลองใหม่');
+			triggerToast('Could not move deal — try again');
 			return;
 		}
 
@@ -225,7 +225,7 @@
 		});
 
 		if (!res.ok) {
-			triggerToast('ลบดีลไม่สำเร็จ');
+			triggerToast('Failed to delete deal');
 			return;
 		}
 
@@ -238,7 +238,7 @@
 		<div>
 			<h1 class="text-2xl font-bold text-slate-900">Sales Pipeline</h1>
 			<p class="text-slate-500 mt-1">
-				มูลค่ารวม <span class="font-bold text-slate-800">฿{totalValue.toLocaleString()}</span>
+				Total value <span class="font-bold text-slate-800">THB {totalValue.toLocaleString()}</span>
 			</p>
 		</div>
 
@@ -252,7 +252,7 @@
 					<svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 					</svg>
-					เพิ่ม Stage
+					Add stage
 				</button>
 
 				<button
@@ -263,7 +263,7 @@
 					<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 					</svg>
-					เพิ่มดีลใหม่
+					New deal
 				</button>
 			{/if}
 
@@ -277,11 +277,11 @@
 					else if (val.startsWith('team:')) setPipelineScope('team', val.split(':')[1]);
 				}}
 			>
-				<option value="mine">ของฉัน: {myTeamName}</option>
+				<option value="mine">My team: {myTeamName}</option>
 				<option value="all">All teams</option>
 				{#each data.teams as t (t.id)}
 					{#if t.id !== myTeamId}
-						<option value={`team:${t.id}`}>ทีม: {t.name}</option>
+						<option value={`team:${t.id}`}>Team: {t.name}</option>
 					{/if}
 				{/each}
 			</select>
@@ -292,7 +292,7 @@
 		<div class="flex flex-wrap items-center gap-3">
 			<input
 				type="text"
-				placeholder="ค้นหาดีลจากชื่อลูกค้า..."
+				placeholder="Search deals by customer name…"
 				class="px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-medium w-64"
 				value={dealSearch}
 				oninput={(e) => {
@@ -302,7 +302,7 @@
 
 			<label class="flex items-center gap-2 text-sm text-slate-700 font-medium">
 				<input type="checkbox" bind:checked={onlyStaleDeals} />
-				เฉพาะ “ต้องทำต่อ”
+				Next action only
 			</label>
 
 			<select

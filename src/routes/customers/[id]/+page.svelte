@@ -113,7 +113,7 @@
 						<h1 class="text-2xl font-bold text-slate-900">{customerFormalLabel(customer.fullname)}</h1>
 						<CustomerStatusBadge isActive={customer.is_active} />
 					</div>
-					<p class="text-slate-500 font-medium">ชื่อเล่น: {customer.nickname || '-'}</p>
+					<p class="text-slate-500 font-medium">Nickname: {customer.nickname || '-'}</p>
 				</div>
 			</div>
 
@@ -130,7 +130,7 @@
 							d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11 20H7v-4l9.586-9.586z"
 						/>
 					</svg>
-					แก้ไข
+					Edit
 				</a>
 
 				<a
@@ -174,8 +174,8 @@
 					{#if customer.line_id}
 						<p class="font-semibold text-slate-900">{customer.line_id}</p>
 					{:else}
-						<p class="font-semibold text-slate-900">ยังไม่ถูกตั้งค่า</p>
-						<p class="text-xs text-slate-500 mt-1">กรุณาไปกด `แก้ไข` เพื่อใส่ LINE ID</p>
+						<p class="font-semibold text-slate-900">Not set</p>
+						<p class="text-xs text-slate-500 mt-1">Edit this customer to add a LINE ID</p>
 					{/if}
 				</div>
 			</div>
@@ -193,7 +193,7 @@
 					</svg>
 				</div>
 				<div>
-					<p class="text-xs text-slate-500 font-medium mb-1">เบอร์โทร</p>
+					<p class="text-xs text-slate-500 font-medium mb-1">Phone</p>
 					<p class="font-semibold text-slate-900">{customer.phone || '-'}</p>
 				</div>
 			</div>
@@ -217,7 +217,7 @@
 					</svg>
 				</div>
 				<div>
-					<p class="text-xs text-slate-500 font-medium mb-1">จังหวัด</p>
+					<p class="text-xs text-slate-500 font-medium mb-1">Province / state</p>
 					<p class="font-semibold text-slate-900">{customer.province || '-'}</p>
 				</div>
 			</div>
@@ -235,7 +235,7 @@
 					</svg>
 				</div>
 				<div>
-					<p class="text-xs text-slate-500 font-medium mb-1">ประเภทธุรกิจ / แท็ก</p>
+					<p class="text-xs text-slate-500 font-medium mb-1">Business type / tags</p>
 					<p class="font-semibold text-slate-900">{formatTags(customer.tags)}</p>
 				</div>
 			</div>
@@ -248,22 +248,22 @@
 			class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col items-center justify-center shadow-sm"
 		>
 			<p class="text-3xl font-bold text-emerald-500 mb-2">
-				฿{(stats?.lifetime_value ?? 0).toLocaleString()}
+				THB {(stats?.lifetime_value ?? 0).toLocaleString()}
 			</p>
-			<p class="text-sm text-slate-500 font-medium">ยอดขายรวม</p>
+			<p class="text-sm text-slate-500 font-medium">Lifetime value</p>
 		</div>
 		<div
 			class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col items-center justify-center shadow-sm"
 		>
 			<p class="text-3xl font-bold text-slate-900 mb-2">{stats?.total_deals ?? 0}</p>
-			<p class="text-sm text-slate-500 font-medium">จำนวนดีล</p>
+			<p class="text-sm text-slate-500 font-medium">Deals</p>
 		</div>
 		<div
 			class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col items-center justify-center shadow-sm text-center"
 		>
 			<p class="text-xl font-bold text-slate-900 mb-2">{stats?.last_contacted_diff_human ?? '-'}</p>
 			<p class="text-sm text-slate-500 font-medium">
-				ติดต่อล่าสุด<br /><span class="text-xs text-slate-400 font-normal"
+				Last contact<br /><span class="text-xs text-slate-400 font-normal"
 					>{formatDate(stats?.last_contacted)}</span
 				>
 			</p>
@@ -272,11 +272,11 @@
 
 	<!-- Deal Timelines -->
 	<div>
-		<h3 class="text-xl font-bold text-slate-900 mb-6 px-1">Timeline แยกตามดีล</h3>
+		<h3 class="text-xl font-bold text-slate-900 mb-6 px-1">Timeline by deal</h3>
 
 		<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
 			{#if deals.length === 0}
-				<div class="text-center py-10 text-slate-500">ยังไม่มีดีลสำหรับลูกค้าท่านนี้</div>
+				<div class="text-center py-10 text-slate-500">No deals for this customer yet</div>
 			{:else}
 				<div class="space-y-4">
 					{#each deals as deal (deal.id)}
@@ -296,7 +296,7 @@
 									</p>
 								</div>
 								<div class="text-right shrink-0">
-									<p class="text-xs text-slate-400">อัปเดตล่าสุด</p>
+									<p class="text-xs text-slate-400">Last updated</p>
 									<p class="font-semibold text-slate-800">{deal.updated_at ? formatDate(deal.updated_at) : '-'}</p>
 								</div>
 							</button>
@@ -310,7 +310,7 @@
 
 									<div class="relative border-l-2 border-slate-200 ml-2 pl-4 space-y-6">
 										{#if deal.activities?.length === 0}
-											<p class="text-sm text-slate-500">ยังไม่มี timeline ของดีลนี้</p>
+											<p class="text-sm text-slate-500">No timeline entries for this deal</p>
 										{:else}
 											{#each buildTimelineGroups(deal.activities as any) as g}
 												<div class="relative">
@@ -343,7 +343,7 @@
 																{/each}
 															</div>
 														{:else}
-															<p class="text-xs text-slate-500 mt-3">ยังไม่มี Activities ในรอบความคืบหน้านี้</p>
+															<p class="text-xs text-slate-500 mt-3">No activities in this progress block</p>
 														{/if}
 													</div>
 												</div>

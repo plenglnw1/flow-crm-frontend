@@ -18,10 +18,10 @@
 
 				<div class="max-w-xl">
 					<h1 class="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-						Sales pipeline ที่โฟกัส “การปิดดีล”
+						A sales pipeline built around closing deals
 					</h1>
 					<p class="mt-4 text-white/75 text-lg leading-relaxed">
-						เข้าสู่ระบบเพื่อเริ่มจัดการ Pipeline, Templates และกิจกรรมติดตามลูกค้า
+						Sign in to manage pipelines, templates, and follow-ups with customers.
 					</p>
 				</div>
 
@@ -34,7 +34,7 @@
 				<div class="bg-white rounded-3xl border border-slate-200 shadow-xl p-8">
 					<h2 class="text-2xl font-bold text-slate-900">Sales app</h2>
 					<p class="mt-2 text-slate-500">
-						เข้าสู่ระบบหรือสมัครฝั่งทีมขายที่นี่ · ผู้จัดการใช้เว็บ backend (Laravel) เท่านั้น
+						Sign in or register as sales here · Managers use the Laravel admin site only.
 					</p>
 
 					<div class="mt-8 flex flex-col gap-3">
@@ -42,7 +42,7 @@
 							href="/login"
 							class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-4 text-base font-bold text-white shadow-lg shadow-slate-900/15 hover:bg-slate-800 transition-all"
 						>
-							เข้าสู่ระบบ (Sales)
+							Sign in (Sales)
 							<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
 							</svg>
@@ -51,7 +51,7 @@
 							href="/register"
 							class="w-full inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-slate-200 bg-white px-5 py-4 text-base font-bold text-slate-800 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all"
 						>
-							สมัคร Sales (รหัสเชิญ)
+							Register (invite code)
 						</a>
 					</div>
 				</div>

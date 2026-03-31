@@ -9,20 +9,9 @@
 	const chartData = data.chartData;
 	const targetProgress = data.target_progress;
 
-	const thMonths = [
-		'ม.ค.',
-		'ก.พ.',
-		'มี.ค.',
-		'เม.ย.',
-		'พ.ค.',
-		'มิ.ย.',
-		'ก.ค.',
-		'ส.ค.',
-		'ก.ย.',
-		'ต.ค.',
-		'พ.ย.',
-		'ธ.ค.'
-	];
+	function monthYearLabel(month: number, year: number) {
+		return new Date(year, month - 1, 1).toLocaleString('en-US', { month: 'long', year: 'numeric' });
+	}
 
 	let activitiesOpen = $state(true);
 
@@ -37,7 +26,7 @@
 	}
 
 	function formatTHB(amount: number) {
-		return `฿${(amount ?? 0).toLocaleString('th-TH')}`;
+		return `THB ${(amount ?? 0).toLocaleString('en-US')}`;
 	}
 
 	function priorityBadgeClasses(key: 'urgent' | 'medium' | 'normal') {
@@ -72,27 +61,27 @@
 <div class="mx-auto max-w-7xl space-y-6 p-4 md:p-6">
 	<div>
 		<h1 class="text-2xl font-bold text-slate-900">Sales Dashboard</h1>
-		<p class="mt-1 text-slate-500">ภาพรวมกิจกรรมของคุณวันนี้</p>
+		<p class="mt-1 text-slate-500">Your activity overview for today</p>
 	</div>
 
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
 		<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-			<p class="text-xs font-medium text-slate-500">ต้องทำวันนี้</p>
+			<p class="text-xs font-medium text-slate-500">Due today</p>
 			<p class="mt-2 text-3xl font-bold text-rose-500">{stats.todo_today}</p>
 		</div>
 		<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-			<p class="text-xs font-medium text-slate-500">ดีลค้างเกิน 3 วัน</p>
+			<p class="text-xs font-medium text-slate-500">Deals overdue (&gt;3 days)</p>
 			<p class="mt-2 text-3xl font-bold text-amber-500">{stats.overdue_deals}</p>
 		</div>
 		<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-			<p class="text-xs font-medium text-slate-500">ลูกค้ายืนยันใบเสนอราคา</p>
+			<p class="text-xs font-medium text-slate-500">Quotes confirmed</p>
 			<p class="mt-2 text-3xl font-bold text-emerald-600">{stats.confirmed_quotes}</p>
 		</div>
 		<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-			<p class="text-xs font-medium text-slate-500">Revenue เดือนนี้</p>
+			<p class="text-xs font-medium text-slate-500">Revenue this month</p>
 			<p class="mt-2 text-3xl font-bold text-slate-900">{formatTHB(stats.revenue_month)}</p>
 			<p class="mt-1 text-xs font-medium text-slate-500">
-				เติบโต {stats.revenue_growth >= 0 ? '+' : ''}{stats.revenue_growth}% จากเดือนก่อน
+				{stats.revenue_growth >= 0 ? '+' : ''}{stats.revenue_growth}% vs last month
 			</p>
 		</div>
 	</div>
@@ -103,10 +92,10 @@
 				<div
 					class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4"
 				>
-					<h2 class="font-bold text-slate-800">กิจกรรมที่ต้องทำวันนี้</h2>
+					<h2 class="font-bold text-slate-800">Tasks due today</h2>
 					<div class="flex items-center gap-2">
 						<span class="rounded bg-slate-100 px-2 py-1 text-xs font-bold text-slate-500">
-							{activities.length} รายการ
+							{activities.length} {activities.length === 1 ? 'item' : 'items'}
 						</span>
 						<button
 							type="button"
@@ -114,14 +103,14 @@
 							onclick={toggleActivitiesOpen}
 							aria-expanded={activitiesOpen}
 						>
-							{activitiesOpen ? 'ซ่อนรายการ' : 'แสดงรายการ'}
+							{activitiesOpen ? 'Hide list' : 'Show list'}
 						</button>
 					</div>
 				</div>
 				{#if activitiesOpen}
 					<div class="divide-y divide-slate-50">
 						{#if activities.length === 0}
-							<div class="p-6 text-center text-slate-500">ไม่มีงานที่ต้องทำวันนี้</div>
+							<div class="p-6 text-center text-slate-500">Nothing due today</div>
 						{:else}
 							{#each activities as a (a.id)}
 								<div
@@ -168,10 +157,10 @@
 
 			<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 				<h2 class="mb-2 font-bold text-slate-800">Revenue Snapshot</h2>
-				<p class="mb-4 text-xs text-slate-400">รายได้ที่ปิดดีล (Won) ตามเดือน</p>
+				<p class="mb-4 text-xs text-slate-400">Won deal revenue by month</p>
 
 				{#if (chartData?.data?.length ?? 0) === 0}
-					<div class="py-10 text-center text-slate-500">ไม่มีข้อมูล</div>
+					<div class="py-10 text-center text-slate-500">No data</div>
 				{:else}
 					<div class="flex flex-col gap-4">
 						<svg viewBox={`0 0 ${spark.w} ${spark.h}`} class="h-[170px] w-full">
@@ -196,20 +185,19 @@
 
 		<div class="space-y-6">
 			<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-				<h3 class="mb-1 font-bold text-slate-800">เป้าหมายรายได้</h3>
+				<h3 class="mb-1 font-bold text-slate-800">Revenue target</h3>
 				<p class="text-xs text-slate-500">
 					{#if targetProgress?.period_month && targetProgress?.period_year}
-						เดือน {thMonths[targetProgress.period_month - 1] ?? ''} พ.ศ. {targetProgress.period_year +
-							543}
-						· จากตาราง Target และยอดปิดดีล Won จริง
+						{monthYearLabel(targetProgress.period_month, targetProgress.period_year)}
+						· From Target settings and actual Won revenue
 					{:else}
-						จากตาราง Target และยอดปิดดีล Won จริง
+						From Target settings and actual Won revenue
 					{/if}
 				</p>
 				<div class="mt-4 space-y-3">
 					{#if targetProgress?.has_target}
 						<div class="flex justify-between text-sm">
-							<span class="text-slate-600">ความคืบหน้าเดือนนี้</span>
+							<span class="text-slate-600">Progress this month</span>
 							<span class="font-bold text-slate-900">{targetProgress.progress_percent}%</span>
 						</div>
 						<div class="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
@@ -220,36 +208,36 @@
 						</div>
 						<div class="space-y-1 text-xs text-slate-600">
 							<p>
-								เป้าหมายเดือนนี้:
+								Monthly target:
 								<span class="font-semibold text-slate-800"
 									>{formatTHB(targetProgress.target_amount)}</span
 								>
 							</p>
 							<p>
-								ปิดได้แล้ว (Won ในเดือน):
+								Won this month:
 								<span class="font-semibold text-emerald-700"
 									>{formatTHB(targetProgress.achieved_amount)}</span
 								>
 							</p>
 							<p>
-								ปิดได้วันนี้:
+								Won today:
 								<span class="font-semibold text-slate-800"
 									>{formatTHB(targetProgress.revenue_today)}</span
 								>
 							</p>
 							<p class="text-slate-500">
-								ก้าวเป้าหมายสะสมถึงวันนี้ (เฉลี่ยเท่าๆ กันทั้งเดือน):
+								Pace to date (even spread):
 								{formatTHB(targetProgress.pace_amount_by_today)}
 							</p>
 						</div>
 					{:else}
 						<p class="text-sm text-slate-600">
-							ยังไม่มีเป้าหมายรายได้เดือนนี้ในระบบ — หัวหน้าทีมตั้งค่า Target ได้จากแดชบอร์ดหลังบ้าน
+							No revenue target for this month — managers can set targets in the admin dashboard.
 						</p>
 						{#if targetProgress && (targetProgress.revenue_today > 0 || targetProgress.achieved_amount > 0)}
 							<p class="text-xs text-slate-500">
-								ยอด Won เดือนนี้ (ยังไม่เทียบเป้า): {formatTHB(targetProgress.achieved_amount)}
-								· วันนี้ {formatTHB(targetProgress.revenue_today)}
+								Won this month (no target): {formatTHB(targetProgress.achieved_amount)}
+								· Today {formatTHB(targetProgress.revenue_today)}
 							</p>
 						{/if}
 					{/if}
@@ -266,10 +254,11 @@
 							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
 						/>
 					</svg>
-					สัญญาณเตือน
+					Heads-up
 				</div>
 				<p class="mt-2 text-sm text-slate-700">
-					{stats.overdue_deals} ดีลของคุณมีงานค้าง (อิงจากกิจกรรมที่ยังไม่เสร็จ)
+					{stats.overdue_deals} {stats.overdue_deals === 1 ? 'deal has' : 'deals have'} open work (incomplete
+					activities).
 				</p>
 			</div>
 		</div>

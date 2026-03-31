@@ -11,7 +11,7 @@ declare global {
 				role: string;
 				team_id?: string | null;
 				organization_id?: string | null;
-			} | null; // ถ้าเป็น null แปลว่ายังไม่ได้ล็อกอิน
+			} | null; // null when not logged in
 		}
 		// interface PageData {}
 		// interface PageState {}

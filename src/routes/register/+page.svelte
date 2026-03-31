@@ -35,16 +35,16 @@
 	</a>
 
 	<div class="mb-6 text-center">
-		<h1 class="text-2xl font-bold text-slate-900">สมัครบัญชี Sales</h1>
+		<h1 class="text-2xl font-bold text-slate-900">Create a sales account</h1>
 		<p class="text-slate-500 text-sm mt-1 max-w-md mx-auto">
-			สำหรับพนักงานขายเท่านั้น — ใช้รหัสเชิญองค์กรจากผู้จัดการ (ผู้จัดการสมัครและตั้งค่าที่เว็บ backend)
+			Sales only — use the organization invite code from your manager (managers register on the Laravel admin site).
 		</p>
 	</div>
 
 	<div class="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-slate-100 p-8">
 		<form method="POST" use:enhance={handleSubmit} class="space-y-5">
 			<div>
-				<label for="name" class="block text-sm font-medium text-slate-700">ชื่อ–นามสกุล</label>
+				<label for="name" class="block text-sm font-medium text-slate-700">Full name</label>
 				<input
 					id="name"
 					name="name"
@@ -54,11 +54,11 @@
 					bind:value={name}
 					disabled={isLoading}
 				/>
-				<p class="text-xs text-slate-400 mt-1">อย่างน้อยสองคำ (ตามกฎบนเซิร์ฟเวอร์)</p>
+				<p class="text-xs text-slate-400 mt-1">At least two words (server validation)</p>
 			</div>
 
 			<div>
-				<label for="email" class="block text-sm font-medium text-slate-700">อีเมล</label>
+				<label for="email" class="block text-sm font-medium text-slate-700">Email</label>
 				<input
 					id="email"
 					name="email"
@@ -72,7 +72,7 @@
 
 			<div class="grid grid-cols-2 gap-3">
 				<div>
-					<label for="password" class="block text-sm font-medium text-slate-700">รหัสผ่าน</label>
+					<label for="password" class="block text-sm font-medium text-slate-700">Password</label>
 					<input
 						id="password"
 						name="password"
@@ -84,7 +84,7 @@
 					/>
 				</div>
 				<div>
-					<label for="password_confirmation" class="block text-sm font-medium text-slate-700">ยืนยัน</label>
+					<label for="password_confirmation" class="block text-sm font-medium text-slate-700">Confirm</label>
 					<input
 						id="password_confirmation"
 						name="password_confirmation"
@@ -98,13 +98,13 @@
 			</div>
 
 			<div class="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
-				<label for="invite_token" class="block text-sm font-medium text-slate-700">รหัสเชิญองค์กร</label>
+				<label for="invite_token" class="block text-sm font-medium text-slate-700">Organization invite code</label>
 				<input
 					id="invite_token"
 					name="invite_token"
 					required
 					class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-3 font-mono tracking-wider uppercase text-center text-lg"
-					placeholder="เช่น CLINICA2026"
+					placeholder="e.g. CLINICA2026"
 					bind:value={invite_token}
 					disabled={isLoading}
 				/>
@@ -119,11 +119,11 @@
 				disabled={isLoading}
 				class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm disabled:opacity-60"
 			>
-				{isLoading ? 'กำลังสมัคร...' : 'สมัคร Sales'}
+				{isLoading ? 'Submitting...' : 'Create account'}
 			</button>
 
 			<p class="text-center text-sm text-slate-500">
-				มีบัญชีแล้ว? <a href="/login" class="text-emerald-600 font-medium hover:underline">เข้าสู่ระบบ</a>
+				Already have an account? <a href="/login" class="text-emerald-600 font-medium hover:underline">Sign in</a>
 			</p>
 		</form>
 	</div>
