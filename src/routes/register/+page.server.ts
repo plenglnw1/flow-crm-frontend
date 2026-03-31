@@ -15,7 +15,7 @@ export const actions: Actions = {
 
 		if (!name || !email || !password || !invite_token) {
 			return fail(400, {
-				message: 'กรุณากรอกข้อมูลให้ครบ รวมรหัสเชิญองค์กร',
+				message: 'Please fill in all fields, including the invite code',
 				values: { name, email, invite_token }
 			});
 		}
@@ -44,7 +44,7 @@ export const actions: Actions = {
 
 		if (!csrfToken) {
 			return fail(500, {
-				message: 'ดึง CSRF จาก backend ไม่ได้',
+				message: 'Could not load CSRF token from backend',
 				values: { name, email, invite_token }
 			});
 		}
@@ -79,7 +79,7 @@ export const actions: Actions = {
 
 		if (res.status !== 302 && res.status !== 303) {
 			return fail(400, {
-				message: 'สมัครไม่สำเร็จ — ตรวจสอบรหัสเชิญ ชื่อ–นามสกุล หรืออีเมลซ้ำ',
+				message: 'Registration failed — check invite code, full name, or duplicate email',
 				values: { name, email, invite_token }
 			});
 		}
@@ -89,14 +89,14 @@ export const actions: Actions = {
 		if (location.includes('/register')) {
 			return fail(400, {
 				message:
-					'ข้อมูลไม่ผ่านการตรวจสอบบนเซิร์ฟเวอร์ — ตรวจสอบรหัสเชิญ หรือว่ามีทีมในองค์กรแล้วหรือยัง',
+					'Server rejected the request — check the invite code and that the organization has a team',
 				values: { name, email, invite_token }
 			});
 		}
 
 		if (location.includes('/login')) {
 			return fail(400, {
-				message: 'เซสชันไม่ถูกต้อง ลองอีกครั้ง',
+				message: 'Invalid session — try again',
 				values: { name, email, invite_token }
 			});
 		}

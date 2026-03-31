@@ -13,20 +13,20 @@
 			</svg>
 		</a>
 		<div>
-			<h1 class="text-2xl font-bold text-slate-900">เพิ่ม Pipeline Stage</h1>
-			<p class="text-sm text-slate-500">สร้างขั้นตอนใหม่สำหรับ Pipeline ของทีมคุณ</p>
+			<h1 class="text-2xl font-bold text-slate-900">Add pipeline stage</h1>
+			<p class="text-sm text-slate-500">Create a new step for your team pipeline</p>
 		</div>
 	</div>
 
 	<form method="POST" class="space-y-6">
 		<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
 			<div>
-				<label class="text-sm font-semibold text-slate-700">ชื่อ Stage</label>
+				<label class="text-sm font-semibold text-slate-700">Stage name</label>
 				<input
 					name="name"
 					required
 					class="w-full mt-1.5 px-4 py-2.5 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white text-slate-800"
-					placeholder="เช่น Qualification"
+					placeholder="e.g. Qualification"
 				/>
 			</div>
 
@@ -51,24 +51,24 @@
 						bind:checked={isWon}
 						class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
 					/>
-					<label class="text-sm font-semibold text-slate-700">ตั้งเป็น Won</label>
+					<label class="text-sm font-semibold text-slate-700">Mark as won stage</label>
 				</div>
 			</div>
 
 			<div>
-				<label class="text-sm font-semibold text-slate-700">คำอธิบาย (optional)</label>
+				<label class="text-sm font-semibold text-slate-700">Description (optional)</label>
 				<textarea
 					name="description"
 					rows={3}
 					class="w-full mt-1.5 px-4 py-2.5 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white text-slate-800"
-					placeholder="หมายเหตุเกี่ยวกับ Stage นี้"
+					placeholder="Notes about this stage"
 				></textarea>
 			</div>
 		</div>
 
 		<div class="flex justify-end gap-3">
 			<a href="/pipeline-stages" class="px-5 py-2.5 rounded-lg border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition-all inline-flex items-center justify-center">
-				ยกเลิก
+				Cancel
 			</a>
 			<button
 				type="submit"
@@ -77,7 +77,7 @@
 				<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
 				</svg>
-				สร้าง Stage
+				Create stage
 			</button>
 		</div>
 	</form>

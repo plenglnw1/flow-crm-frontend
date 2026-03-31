@@ -51,7 +51,7 @@
 			<h3 class="font-bold text-slate-700">{stage.name}</h3>
 			<span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full text-xs font-semibold">{count}</span>
 		</div>
-		<div class="text-sm font-semibold text-slate-400">฿{totalText()}</div>
+		<div class="text-sm font-semibold text-slate-400">THB {totalText()}</div>
 	</div>
 
 	<div class="p-3 space-y-3 flex-1 overflow-y-auto min-h-[500px]">
@@ -67,7 +67,7 @@
 			<svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 			</svg>
-			เพิ่มดีล
+			Add deal
 		</button>
 	</div>
 </div>

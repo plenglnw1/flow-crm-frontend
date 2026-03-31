@@ -37,15 +37,15 @@
 	<!-- Header -->
 	<div class="mb-8 flex items-center justify-between">
 		<div>
-			<h1 class="text-2xl font-bold text-slate-900 tracking-tight">เพิ่มลูกค้าใหม่</h1>
-			<p class="text-sm text-slate-500 mt-1">กรอกข้อมูลเพื่อสร้างประวัติลูกค้าใหม่ในระบบ</p>
+			<h1 class="text-2xl font-bold text-slate-900 tracking-tight">Add customer</h1>
+			<p class="text-sm text-slate-500 mt-1">Create a new customer record</p>
 		</div>
 		<button
 			type="button"
 			class="text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors"
 			onclick={() => goto('/customers')}
 		>
-			ยกเลิก
+			Cancel
 		</button>
 	</div>
 
@@ -86,9 +86,9 @@
 			<!-- Section 1: Avatar -->
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-slate-100 pb-8">
 				<div>
-					<h3 class="text-base font-semibold leading-6 text-slate-900">รูปโปรไฟล์</h3>
+					<h3 class="text-base font-semibold leading-6 text-slate-900">Profile photo</h3>
 					<p class="mt-1 text-sm text-slate-500">
-						อัปโหลดรูปภาพเพื่อใช้เป็นไอคอนแสดงผล (ไม่เกิน 2MB)
+						Upload an avatar image (max 2MB)
 					</p>
 				</div>
 				<div class="md:col-span-2 flex items-center gap-6">
@@ -118,7 +118,7 @@
 							for="avatar"
 							class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
 						>
-							เลือกรูปภาพ
+							Choose image
 							<input
 								id="avatar"
 								name="avatar"
@@ -137,7 +137,7 @@
 								onclick={clearSelectedAvatar}
 								class="mt-3 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
 							>
-								ลบรูปที่เลือก
+								Remove selected image
 							</button>
 						{/if}
 					</div>
@@ -147,13 +147,13 @@
 			<!-- Section 2: General Information -->
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-slate-100 pb-8">
 				<div>
-					<h3 class="text-base font-semibold leading-6 text-slate-900">ข้อมูลส่วนตัว</h3>
-					<p class="mt-1 text-sm text-slate-500">ข้อมูลสำหรับติดต่อและระบุตัวตนเบื้องต้น</p>
+					<h3 class="text-base font-semibold leading-6 text-slate-900">Contact</h3>
+					<p class="mt-1 text-sm text-slate-500">How we reach and identify this person</p>
 				</div>
 				<div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
 					<div class="sm:col-span-2">
 						<label for="fullname" class="block text-sm font-medium leading-6 text-slate-900">
-							ชื่อ-นามสกุล <span class="text-red-500">*</span>
+							Full name <span class="text-red-500">*</span>
 						</label>
 						<div class="mt-2">
 							<input
@@ -169,7 +169,7 @@
 
 					<div>
 						<label for="nickname" class="block text-sm font-medium leading-6 text-slate-900">
-							ชื่อเล่น
+							Nickname
 						</label>
 						<div class="mt-2">
 							<input
@@ -199,7 +199,7 @@
 
 					<div>
 						<label for="phone" class="block text-sm font-medium leading-6 text-slate-900">
-							เบอร์โทรศัพท์
+							Phone
 						</label>
 						<div class="mt-2">
 							<input
@@ -213,7 +213,7 @@
 
 					<div>
 						<label for="email" class="block text-sm font-medium leading-6 text-slate-900">
-							อีเมล
+							Email
 						</label>
 						<div class="mt-2">
 							<input
@@ -230,13 +230,13 @@
 			<!-- Section 3: Additional Details -->
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-b border-slate-100 pb-8">
 				<div>
-					<h3 class="text-base font-semibold leading-6 text-slate-900">ข้อมูลเพิ่มเติม</h3>
-					<p class="mt-1 text-sm text-slate-500">ที่อยู่ แท็กและสถานะของลูกค้า</p>
+					<h3 class="text-base font-semibold leading-6 text-slate-900">More details</h3>
+					<p class="mt-1 text-sm text-slate-500">Address, tags, and status</p>
 				</div>
 				<div class="md:col-span-2 grid grid-cols-1 gap-y-5 gap-x-6 sm:grid-cols-2">
 					<div>
 						<label for="province" class="block text-sm font-medium leading-6 text-slate-900">
-							จังหวัด
+							Province / state
 						</label>
 						<div class="mt-2">
 							<input
@@ -244,14 +244,14 @@
 								name="province"
 								id="province"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
-								placeholder="เช่น กรุงเทพมหานคร"
+								placeholder="e.g. Bangkok"
 							/>
 						</div>
 					</div>
 
 					<div>
 						<label for="tags" class="block text-sm font-medium leading-6 text-slate-900">
-							แท็ก / ประเภทธุรกิจ
+							Tags / business type
 						</label>
 						<div class="mt-2">
 							<input
@@ -259,14 +259,14 @@
 								name="tags"
 								id="tags"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
-								placeholder="คั่นด้วยจุลภาค (,) เช่น VIP, คลินิก"
+								placeholder="Comma-separated, e.g. VIP, clinic"
 							/>
 						</div>
 					</div>
 
 					<div class="sm:col-span-2">
 						<label for="address" class="block text-sm font-medium leading-6 text-slate-900">
-							ที่อยู่
+							Address
 						</label>
 						<div class="mt-2">
 							<textarea
@@ -290,10 +290,10 @@
 						</div>
 						<div class="text-sm leading-6">
 							<label for="is_active" class="font-medium text-slate-900 cursor-pointer"
-								>เปิดใช้งานลูกค้ารายนี้ (Active)</label
+								>Customer is active</label
 							>
 							<p class="text-slate-500">
-								หากปิดใช้งาน ลูกค้าจะไม่แสดงในรายงานและกระดานท่อการขายบางส่วน
+								Inactive customers may be hidden from some reports and pipeline views
 							</p>
 						</div>
 					</div>
@@ -310,7 +310,7 @@
 				class="text-sm font-semibold leading-6 text-slate-700 px-4 py-2 hover:bg-slate-200 rounded-lg transition-colors"
 				onclick={() => goto('/customers')}
 			>
-				ยกเลิก
+				Cancel
 			</button>
 			<button
 				type="submit"
@@ -332,9 +332,9 @@
 							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 						></path>
 					</svg>
-					กำลังบันทึก...
+					Saving...
 				{:else}
-					บันทึกลูกค้า
+					Save customer
 				{/if}
 			</button>
 		</div>

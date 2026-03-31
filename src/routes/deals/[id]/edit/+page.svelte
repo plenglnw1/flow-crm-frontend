@@ -22,7 +22,7 @@
 	const updatedAt = deal?.updated_at ? new Date(deal.updated_at) : null;
 	const daysInStage = updatedAt ? Math.floor((Date.now() - updatedAt.getTime()) / 86400000) : 0;
 	const healthColor = daysInStage > 7 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700';
-	const healthText = daysInStage > 7 ? 'Stagnant (นิ่งนานเกิน)' : 'Healthy (สดใหม่)';
+	const healthText = daysInStage > 7 ? 'Stagnant' : 'Healthy';
 
 	const stageLabel = deal?.lost_at ? 'Lost' : deal?.stage?.name ?? 'Unknown';
 
@@ -66,7 +66,7 @@
 
 	function copyLineScript() {
 		// Simple static template; backend currently doesn't store it.
-		const text = `สวัสดีครับ คุณ${deal?.customer?.nickname ?? ''} ผมส่งใบเสนอราคาให้พิจารณา...`;
+		const text = `Hi ${deal?.customer?.nickname ?? 'there'}, sharing our quote for your review…`;
 		navigator.clipboard?.writeText(text);
 	}
 </script>
@@ -86,7 +86,7 @@
 			class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900"
 			role="status"
 		>
-			บันทึกการเปลี่ยนแปลงเรียบร้อยแล้ว
+			Changes saved
 		</div>
 	{/if}
 	<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -96,11 +96,11 @@
 				<span class={`px-2.5 py-0.5 rounded-full text-xs font-bold ${healthColor}`}>{healthText}</span>
 			</div>
 			<p class="text-sm text-slate-500 mt-1">
-								ลูกค้า: <strong>{customerFormalLabel(deal.customer?.name ?? '')}</strong>
+								Customer: <strong>{customerFormalLabel(deal.customer?.name ?? '')}</strong>
 				{#if deal.customer?.nickname}
-					<span class="text-slate-400"> (ชื่อเล่น {deal.customer.nickname})</span>
+					<span class="text-slate-400"> (nickname {deal.customer.nickname})</span>
 				{/if}
-				<span> • สร้างเมื่อ </span>
+				<span> • Created </span>
 				{deal.created_at ? new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(deal.created_at)) : '-'}
 			</p>
 		</div>
@@ -111,7 +111,7 @@
 				class="px-6 py-2.5 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-all"
 				on:click|preventDefault={() => goto('/pipeline-stages')}
 			>
-				กลับ
+				Back
 			</a>
 		</div>
 	</div>
@@ -135,7 +135,7 @@
 					form="editDealForm"
 					class="px-6 py-2.5 bg-slate-900 text-white rounded-lg font-medium shadow-lg hover:bg-slate-800 transition-all"
 				>
-					บันทึกการเปลี่ยนแปลง
+					Save changes
 				</button>
 			</div>
 		</div>
@@ -150,7 +150,7 @@
 				</div>
 
 				<div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm text-slate-600 italic mb-3 relative group">
-					"สวัสดีครับ คุณ{deal.customer?.nickname ?? ''} ผมส่งใบเสนอราคาให้พิจารณา..."
+					"Hi {deal.customer?.nickname ?? 'there'}, sharing our quote for your review…"
 				</div>
 
 				<button
@@ -158,7 +158,7 @@
 					on:click={copyLineScript}
 					class="w-full py-2 border border-emerald-200 text-emerald-600 rounded-lg hover:bg-emerald-50 text-sm font-bold transition-colors flex items-center justify-center gap-2"
 				>
-					คัดลอกข้อความ
+					Copy message
 				</button>
 			</div>
 
@@ -167,19 +167,19 @@
 				<button
 					type="submit"
 					on:click={(e) => {
-						if (!confirm('ต้องการลบดีลนี้ใช่ไหม?')) e.preventDefault();
+						if (!confirm('Delete this deal?')) e.preventDefault();
 					}}
 					class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all flex items-center justify-center gap-2"
 				>
-					ลบดีล
+					Delete deal
 				</button>
 			</form>
 
 			<div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-				<h3 class="font-bold text-slate-800 mb-4">Timeline กิจกรรม</h3>
+				<h3 class="font-bold text-slate-800 mb-4">Activity timeline</h3>
 				<div class="relative border-l-2 border-slate-200 ml-3 space-y-6">
 					{#if data.activities.length === 0}
-						<p class="text-sm text-slate-500 ml-3">ยังไม่มีรายการกิจกรรม</p>
+						<p class="text-sm text-slate-500 ml-3">No activities yet</p>
 					{/if}
 				</div>
 			</div>

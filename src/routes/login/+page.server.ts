@@ -9,7 +9,7 @@ export const actions: Actions = {
 		const password = String(form.get('password') ?? '');
 
 		if (!email || !password) {
-			return fail(400, { message: 'Email และ Password จำเป็นต้องกรอก', email });
+			return fail(400, { message: 'Email and password are required', email });
 		}
 
 		if (!API_URL) {
@@ -63,12 +63,12 @@ export const actions: Actions = {
 			const location = res.headers.get('location') ?? '';
 			// Breeze redirects back to /login on failure (with errors in session).
 			if (location.includes('/login')) {
-				return fail(401, { message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง', email });
+				return fail(401, { message: 'Invalid email or password', email });
 			}
 
 			throw redirect(303, '/pipeline-stages');
 		}
 
-		return fail(401, { message: 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง', email });
+		return fail(401, { message: 'Sign in failed — check your details and try again', email });
 	}
 };

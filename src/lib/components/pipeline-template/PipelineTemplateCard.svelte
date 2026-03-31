@@ -30,7 +30,7 @@
 <div class="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col h-full hover:shadow-lg hover:border-gray-300 transition-all duration-200 group relative">
 	{#if template.is_popular}
 		<span class="absolute top-4 right-4 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">
-			ยอดนิยม
+			Popular
 		</span>
 	{/if}
 
@@ -88,8 +88,10 @@
 			{/if}
 		</div>
 
-		<h3 class="text-lg font-bold text-slate-800">{template.title_th}</h3>
-		<p class="text-sm text-slate-400 font-medium">{template.title_en}</p>
+		<h3 class="text-lg font-bold text-slate-800">{template.title_en || template.title_th}</h3>
+		{#if template.title_en && template.title_th && template.title_en !== template.title_th}
+			<p class="text-sm text-slate-400 font-medium">{template.title_th}</p>
+		{/if}
 	</div>
 
 	<p class="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">{template.description}</p>
@@ -108,14 +110,14 @@
 	</div>
 
 	<div class="mb-6">
-		<p class="text-xs text-slate-400">รวม {template.script_count} Script ภาษาไทย</p>
+		<p class="text-xs text-slate-400">{template.script_count} LINE scripts</p>
 	</div>
 
 	<button
 		type="button"
 		class="w-full py-2.5 px-4 rounded-lg border border-gray-200 text-slate-700 font-semibold text-sm hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all flex items-center justify-center gap-2 mt-auto"
 	>
-		เลือก Template นี้
+		Use this template
 		<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
 		</svg>

@@ -21,7 +21,7 @@ export const actions: Actions = {
         if (!fullname || !line_id) {
             return fail(400, {
                 error: true,
-                message: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (ชื่อ-นามสกุล, LINE ID)'
+                message: 'Please fill required fields (full name, LINE ID)'
             });
         }
 
@@ -49,13 +49,13 @@ export const actions: Actions = {
                 const result = await res.json().catch(() => ({}));
                 return fail(res.status, {
                     error: true,
-                    message: result.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง'
+                    message: result.message || 'Could not save customer — try again'
                 });
             }
         } catch (err) {
             return fail(500, {
                 error: true,
-                message: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ในขณะนี้'
+                message: 'Cannot reach server right now'
             });
         }
 

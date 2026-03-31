@@ -44,10 +44,10 @@
 	const isWon = $derived(stage !== 'lost' && stage !== '' && stage === wonStageId);
 
 	const lostReasonOptions = [
-		{ value: 'price', label: 'สู้ราคาไม่ได้' },
-		{ value: 'competitor', label: 'คู่แข่งดีกว่า' },
-		{ value: 'not_interested', label: 'ลูกค้าเปลี่ยนใจ/ไม่สนใจ' },
-		{ value: 'other', label: 'อื่นๆ' }
+		{ value: 'price', label: 'Lost on price' },
+		{ value: 'competitor', label: 'Competitor won' },
+		{ value: 'not_interested', label: 'Not interested / churned' },
+		{ value: 'other', label: 'Other' }
 	];
 </script>
 
@@ -55,41 +55,41 @@
 	<!-- Deal detail -->
 	<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
 		<div class="flex items-center gap-2 mb-2">
-			<h2 class="text-lg font-bold text-slate-900">รายละเอียดดีล</h2>
-			<p class="text-sm text-slate-500">ข้อมูลเบื้องต้นสำหรับการขาย</p>
+			<h2 class="text-lg font-bold text-slate-900">Deal details</h2>
+			<p class="text-sm text-slate-500">Basic fields for the opportunity</p>
 		</div>
 
 		<div class="space-y-4">
 			<div>
-				<label class="text-sm font-semibold text-slate-700">ชื่อดีล (Deal Name)</label>
+				<label class="text-sm font-semibold text-slate-700">Deal name</label>
 				<input
 					class="w-full mt-1.5 px-4 py-2.5 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white text-slate-800"
 					name="name"
 					required
 					bind:value={name}
-					placeholder="เช่น ขายคอนโดคุณต้น"
+					placeholder="e.g. Condo sale – Mr. Ton"
 				/>
 			</div>
 
 			<div>
-				<label class="text-sm font-semibold text-slate-700">ลูกค้า (Customer)</label>
+				<label class="text-sm font-semibold text-slate-700">Customer</label>
 				<select
 					name="customer_id"
 					class="w-full mt-1.5 px-4 py-2.5 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white text-slate-800"
 					required
 					bind:value={customerId}
 				>
-					<option value="" disabled>ค้นหาจาก ชื่อ, ชื่อเล่น, Line ID...</option>
+					<option value="" disabled>Select customer…</option>
 					{#each customers as c (c.id)}
 						<option value={c.id}>{c.label}</option>
 					{/each}
 				</select>
-				<p class="text-xs text-slate-400 mt-1">พิมพ์เพื่อค้นหาชื่อเล่นได้ทันที</p>
+				<p class="text-xs text-slate-400 mt-1">Search by name, nickname, or LINE ID where supported</p>
 			</div>
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div>
-					<label class="text-sm font-semibold text-slate-700">มูลค่า (บาท)</label>
+					<label class="text-sm font-semibold text-slate-700">Amount (THB)</label>
 					<input
 						type="number"
 						step="0.01"
@@ -102,7 +102,7 @@
 				</div>
 
 				<div>
-					<label class="text-sm font-semibold text-slate-700">คาดว่าจะปิดวันที่</label>
+					<label class="text-sm font-semibold text-slate-700">Expected close date</label>
 					<input
 						type="date"
 						name="expected_close_date"
@@ -117,13 +117,13 @@
 	<!-- Stage & progress -->
 	<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
 		<div>
-			<h2 class="text-lg font-bold text-slate-900">ความคืบหน้า</h2>
-			<p class="text-sm text-slate-500">อัปเดตสถานะและวางแผนงานถัดไป</p>
+			<h2 class="text-lg font-bold text-slate-900">Progress</h2>
+			<p class="text-sm text-slate-500">Update stage and plan the next step</p>
 		</div>
 
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 			<div class="md:col-span-2">
-				<label class="text-sm font-semibold text-slate-700">ขั้นตอนการขาย (Stage)</label>
+				<label class="text-sm font-semibold text-slate-700">Stage</label>
 				<select
 					name="stage"
 					class="w-full mt-1.5 px-4 py-2.5 rounded-lg border border-gray-300 focus:border-emerald-500 bg-white font-medium"
@@ -132,23 +132,23 @@
 				>
 					{#each stages as s (s.id)}
 						<option value={s.id} class={s.is_won ? 'text-emerald-600 font-bold' : ''}>
-							{s.name}{s.is_won ? ' (ปิดการขายสำเร็จ)' : ''}
+							{s.name}{s.is_won ? ' (Won)' : ''}
 						</option>
 					{/each}
-					<option value="lost" class="text-red-600 font-bold">Closed Lost (แพ้ดีล)</option>
+					<option value="lost" class="text-red-600 font-bold">Closed lost</option>
 				</select>
 			</div>
 
 			{#if isLost}
 				<div class="md:col-span-2 bg-red-50 p-4 rounded-lg border border-red-200">
-					<label class="text-sm font-bold text-red-700">สาเหตุที่เสียดีล (Lost Reason) *</label>
+					<label class="text-sm font-bold text-red-700">Lost reason *</label>
 					<select
 						name="lost_reason"
 						class="w-full mt-2 px-3 py-2 rounded border border-red-300 text-red-900 bg-white"
 						bind:value={lostReason}
 						required
 					>
-						<option value="">ระบุสาเหตุ...</option>
+						<option value="">Choose a reason…</option>
 						{#each lostReasonOptions as o}
 							<option value={o.value}>{o.label}</option>
 						{/each}
@@ -161,22 +161,22 @@
 
 				<div class="md:col-span-2">
 					<div class="flex items-center gap-2 mb-1.5">
-						<label class="text-sm font-bold text-emerald-700">สิ่งที่ต้องทำถัดไป (Next Action)</label>
+						<label class="text-sm font-bold text-emerald-700">Next action</label>
 						<span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full font-bold">MANDATORY</span>
 					</div>
 					<input
 						type="text"
 						name="next_action"
-						placeholder="เช่น โทรยืนยันนัด, ส่งใบเสนอราคาแก้ไข"
+						placeholder="e.g. Confirm appointment, send revised quote"
 						class="w-full px-4 py-2.5 rounded-lg border-2 border-emerald-100 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all text-slate-800"
 						bind:value={nextAction}
 						required
 					/>
-					<p class="text-xs text-slate-400 mt-1">ระบบจะสร้าง Task ในปฏิทินให้อัตโนมัติ</p>
+					<p class="text-xs text-slate-400 mt-1">Creates a task on your calendar automatically</p>
 				</div>
 
 				<div>
-					<label class="text-sm font-bold text-emerald-700">กำหนดทำวันที่</label>
+					<label class="text-sm font-bold text-emerald-700">Due date</label>
 					<input
 						type="date"
 						name="next_action_date"
@@ -191,7 +191,7 @@
 
 	<!-- Extra -->
 	<div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-		<label class="text-sm font-semibold text-slate-700">รายละเอียดเพิ่มเติม</label>
+		<label class="text-sm font-semibold text-slate-700">Notes</label>
 		<textarea
 			name="description"
 			rows={3}

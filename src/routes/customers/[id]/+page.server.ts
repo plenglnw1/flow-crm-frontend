@@ -15,9 +15,9 @@ export const load: PageServerLoad = async ({ params, request }) => {
 
     if (!res.ok) {
         if (res.status === 404) {
-            error(404, 'ไม่พบข้อมูลลูกค้า');
+            error(404, 'Customer not found');
         }
-        error(500, 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+        error(500, 'Server error while loading customer');
     }
 
     const data = await res.json();

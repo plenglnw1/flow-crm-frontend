@@ -21,7 +21,7 @@ jobs:
         if: always()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "🔔 มีการเคลื่อนไหวที่ Repository (Frontend)"
+          title: "🔔 Repository activity (Frontend)"
 
           # Use Logic: Push shows Commit Message, PR shows Title
           description: |
@@ -32,7 +32,7 @@ jobs:
             **Message:** `${{ github.event.head_commit.message || github.event.pull_request.title }}`
             **Status:** ${{ job.status }}
 
-            ${{ github.event_name == 'pull_request' && format('[👉 ไปที่ Pull Request]({0})', github.event.pull_request.html_url) || '' }}
+            ${{ github.event_name == 'pull_request' && format('[Open Pull Request]({0})', github.event.pull_request.html_url) || '' }}
 
           # Green=Success, Red=Failure, Yellow=Cancelled
           color: ${{ job.status == 'success' && '0x28a745' || job.status == 'failure' && '0xdc3545' || '0xffc107' }}
