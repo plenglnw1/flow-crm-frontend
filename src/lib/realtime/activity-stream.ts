@@ -12,12 +12,11 @@ export async function subscribeToActivityStream(
 	let Echo: any;
 	let Pusher: any;
 	try {
-		// Vite จะพยายาม resolve imports แม้เป็น dynamic import
-		// ถ้า node_modules ยังไม่ติดตั้ง ระบบจะ crash ทันที
-		// ใช้ @vite-ignore เพื่อให้ build ผ่าน และ fallback เป็นไม่ realtime
+		const echoSpecifier = 'laravel-echo';
+		const pusherSpecifier = 'pusher-js';
 		const [echoMod, pusherMod] = await Promise.all([
-			import(/* @vite-ignore */ 'laravel-echo'),
-			import(/* @vite-ignore */ 'pusher-js')
+			import(/* @vite-ignore */ echoSpecifier),
+			import(/* @vite-ignore */ pusherSpecifier)
 		]);
 		Echo = (echoMod as any).default ?? echoMod;
 		Pusher = (pusherMod as any).default ?? pusherMod;
@@ -44,7 +43,6 @@ export async function subscribeToActivityStream(
 		wssPort: wsPort,
 		forceTLS,
 		enabledTransports: ['ws', 'wss'],
-		// Use same-origin SvelteKit endpoint so browser cookies work cross-origin.
 		authEndpoint: '/broadcasting/auth',
 		withCredentials: true
 	});
