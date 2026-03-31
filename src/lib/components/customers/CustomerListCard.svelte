@@ -8,6 +8,9 @@
 		nickname?: string | null;
 		is_active: boolean;
 		lifetime_value?: number;
+		total_deals?: number;
+		last_contacted?: string | null;
+		last_contacted_diff_human?: string | null;
 		organization_name?: string | null;
 		phone_num?: string | null;
 		line_id?: string | null;
