@@ -18,12 +18,14 @@
 		customers,
 		stages,
 		deal = {},
-		initialStageId
+		initialStageId,
+		errors = {}
 	} = $props<{
 		customers: CustomerOption[];
 		stages: StageOption[];
 		deal?: DealLike;
 		initialStageId?: string;
+		errors?: Record<string, string>;
 	}>();
 
 	const wonStageId = $derived(stages.find((s: StageOption) => s.is_won)?.id ?? '');
@@ -69,6 +71,9 @@
 					bind:value={name}
 					placeholder="e.g. Condo sale – Mr. Ton"
 				/>
+				{#if errors.name}
+					<p class="text-xs text-red-600 mt-1">{errors.name}</p>
+				{/if}
 			</div>
 
 			<div>
@@ -85,6 +90,9 @@
 					{/each}
 				</select>
 				<p class="text-xs text-slate-400 mt-1">Search by name, nickname, or LINE ID where supported</p>
+				{#if errors.customer_id}
+					<p class="text-xs text-red-600 mt-1">{errors.customer_id}</p>
+				{/if}
 			</div>
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -99,6 +107,9 @@
 						class="w-full mt-1.5 px-4 py-2.5 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-white text-slate-800"
 						placeholder="0.00"
 					/>
+					{#if errors.value}
+						<p class="text-xs text-red-600 mt-1">{errors.value}</p>
+					{/if}
 				</div>
 
 				<div>
@@ -137,6 +148,9 @@
 					{/each}
 					<option value="lost" class="text-red-600 font-bold">Closed lost</option>
 				</select>
+				{#if errors.stage}
+					<p class="text-xs text-red-600 mt-1">{errors.stage}</p>
+				{/if}
 			</div>
 
 			{#if isLost}
@@ -153,6 +167,9 @@
 							<option value={o.value}>{o.label}</option>
 						{/each}
 					</select>
+					{#if errors.lost_reason}
+						<p class="text-xs text-red-600 mt-1">{errors.lost_reason}</p>
+					{/if}
 				</div>
 			{/if}
 
@@ -173,6 +190,9 @@
 						required
 					/>
 					<p class="text-xs text-slate-400 mt-1">Creates a task on your calendar automatically</p>
+					{#if errors.next_action}
+						<p class="text-xs text-red-600 mt-1">{errors.next_action}</p>
+					{/if}
 				</div>
 
 				<div>
@@ -184,6 +204,9 @@
 						bind:value={nextActionDate}
 						required
 					/>
+					{#if errors.next_action_date}
+						<p class="text-xs text-red-600 mt-1">{errors.next_action_date}</p>
+					{/if}
 				</div>
 			{/if}
 		</div>

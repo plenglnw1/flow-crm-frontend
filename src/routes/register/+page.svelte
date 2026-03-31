@@ -55,6 +55,9 @@
 					disabled={isLoading}
 				/>
 				<p class="text-xs text-slate-400 mt-1">At least two words (server validation)</p>
+				{#if form?.errors?.name}
+					<p class="text-xs text-red-600 mt-1">{form.errors.name}</p>
+				{/if}
 			</div>
 
 			<div>
@@ -68,6 +71,9 @@
 					bind:value={email}
 					disabled={isLoading}
 				/>
+				{#if form?.errors?.email}
+					<p class="text-xs text-red-600 mt-1">{form.errors.email}</p>
+				{/if}
 			</div>
 
 			<div class="grid grid-cols-2 gap-3">
@@ -82,6 +88,9 @@
 						class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
 						disabled={isLoading}
 					/>
+					{#if form?.errors?.password}
+						<p class="text-xs text-red-600 mt-1">{form.errors.password}</p>
+					{/if}
 				</div>
 				<div>
 					<label for="password_confirmation" class="block text-sm font-medium text-slate-700">Confirm</label>
@@ -94,6 +103,9 @@
 						class="mt-1 block w-full rounded-xl border border-gray-300 px-4 py-2 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
 						disabled={isLoading}
 					/>
+					{#if form?.errors?.password_confirmation}
+						<p class="text-xs text-red-600 mt-1">{form.errors.password_confirmation}</p>
+					{/if}
 				</div>
 			</div>
 
@@ -108,6 +120,9 @@
 					bind:value={invite_token}
 					disabled={isLoading}
 				/>
+				{#if form?.errors?.invite_token}
+					<p class="text-xs text-red-600 mt-1">{form.errors.invite_token}</p>
+				{/if}
 			</div>
 
 			{#if form?.message}
