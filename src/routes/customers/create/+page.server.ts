@@ -9,10 +9,15 @@ export const actions: Actions = {
         const csrfToken = await getBackendCsrf(cookieHeader);
 
         if (!API_URL || !csrfToken) {
-            return fail(500, { message: 'Missing API_URL or CSRF token' });
+            return fail(500, { error: true, message: 'Missing API_URL or CSRF token', errors: {} });
         }
 
         const formData = await request.formData();
+        const values = Object.fromEntries(
+            Array.from(formData.entries())
+                .filter(([k]) => k !== 'avatar')
+                .map(([k, v]) => [k, String(v)])
+        ) as Record<string, string>;
 
         // Basic validation for required fields according to spec
         const fullname = formData.get('fullname')?.toString();
@@ -21,7 +26,12 @@ export const actions: Actions = {
         if (!fullname || !line_id) {
             return fail(400, {
                 error: true,
-                message: 'Please fill required fields (full name, LINE ID)'
+                message: 'Please fill required fields (full name, LINE ID)',
+                errors: {
+                    ...(!fullname ? { fullname: 'Full name is required' } : {}),
+                    ...(!line_id ? { line_id: 'LINE ID is required' } : {})
+                },
+                values
             });
         }
 
@@ -46,16 +56,28 @@ export const actions: Actions = {
             });
 
             if (!res.ok) {
-                const result = await res.json().catch(() => ({}));
+                const result = await res.json().catch(() => ({} as Record<string, any>));
+                const errors = result.errors
+                    ? Object.fromEntries(
+                            Object.entries(result.errors as Record<string, string[]>).map(([k, arr]) => [
+                                k,
+                                arr?.[0] ?? 'Invalid input'
+                            ])
+                        )
+                    : {};
                 return fail(res.status, {
                     error: true,
-                    message: result.message || 'Could not save customer — try again'
+                    message: result.message || 'Could not save customer — try again',
+                    errors,
+                    values
                 });
             }
         } catch (err) {
             return fail(500, {
                 error: true,
-                message: 'Cannot reach server right now'
+                message: 'Cannot reach server right now',
+                errors: {},
+                values
             });
         }
 

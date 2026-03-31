@@ -1,9 +1,9 @@
 <script lang="ts">
 	import DealFormFields from '$lib/components/deals/DealFormFields.svelte';
 	import { goto } from '$app/navigation';
-	import type { PageData } from './$types';
+import type { ActionData, PageData } from './$types';
 
-	let { data }: { data: PageData } = $props();
+let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
 <div class="max-w-3xl mx-auto py-6 space-y-6">
@@ -33,7 +33,18 @@
 	</div>
 
 	<form id="createDealForm" method="POST" class="space-y-6">
-		<DealFormFields customers={data.customers} stages={data.stages} initialStageId={data.initialStageId} />
+		{#if form?.message}
+			<div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+				{form.message}
+			</div>
+		{/if}
+		<DealFormFields
+			customers={data.customers}
+			stages={data.stages}
+			initialStageId={data.initialStageId}
+			deal={form?.values ?? {}}
+			errors={form?.errors ?? {}}
+		/>
 	</form>
 </div>
 

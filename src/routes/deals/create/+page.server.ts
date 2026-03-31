@@ -40,10 +40,13 @@ export const actions: Actions = {
 		const csrfToken = await getBackendCsrf(cookieHeader);
 
 		if (!API_URL || !csrfToken) {
-			return fail(500, { message: 'Missing API_URL or CSRF token' });
+			return fail(500, { message: 'Missing API_URL or CSRF token', errors: {}, values: {} });
 		}
 
 		const formData = await request.formData();
+		const values = Object.fromEntries(
+			Array.from(formData.entries()).map(([k, v]) => [k, String(v)])
+		) as Record<string, string>;
 		const body = new URLSearchParams();
 		for (const [k, v] of formData.entries()) {
 			body.append(k, String(v));
@@ -64,17 +67,30 @@ export const actions: Actions = {
 			body: body.toString()
 		});
 
+		if (res.status === 422) {
+			const json = await res.json().catch(() => ({} as Record<string, any>));
+			const errors = json.errors
+				? Object.fromEntries(
+						Object.entries(json.errors as Record<string, string[]>).map(([k, arr]) => [
+							k,
+							arr?.[0] ?? 'Invalid input'
+						])
+					)
+				: {};
+			return fail(422, { message: 'Please fix the highlighted fields', errors, values });
+		}
+
 		const location = res.headers.get('location') ?? '';
 		const looksLikeSuccess = location.includes('/pipeline-stages');
 
 		if (!res.ok && res.status !== 302 && res.status !== 303) {
 			const message =
 				res.status === 403 ? 'You cannot create deals for another team' : 'Failed to create deal';
-			return fail(res.status, { message });
+			return fail(res.status, { message, errors: {}, values });
 		}
 
 		if ((res.status === 302 || res.status === 303) && !looksLikeSuccess) {
-			return fail(400, { message: 'Validation failed while creating deal' });
+			return fail(400, { message: 'Validation failed while creating deal', errors: {}, values });
 		}
 
 		throw redirect(303, '/pipeline-stages');

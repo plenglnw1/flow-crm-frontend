@@ -13,17 +13,35 @@ export const actions: Actions = {
 		const password_confirmation = String(form.get('password_confirmation') ?? '');
 		const invite_token = String(form.get('invite_token') ?? '').trim();
 
-		if (!name || !email || !password || !invite_token) {
+		const errors: Record<string, string> = {};
+		const nameParts = name
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean);
+		if (!name) errors.name = 'Please enter your full name';
+		else if (nameParts.length < 2) errors.name = 'Please enter both first and last name';
+		if (!email) errors.email = 'Please enter your email';
+		if (!password) errors.password = 'Please enter your password';
+		if (password && password.length < 8) errors.password = 'Password must be at least 8 characters';
+		if (!password_confirmation) errors.password_confirmation = 'Please confirm your password';
+		if (password && password_confirmation && password !== password_confirmation) {
+			errors.password_confirmation = 'Password confirmation does not match';
+		}
+		if (!invite_token) errors.invite_token = 'Please enter organization invite code';
+
+		if (Object.keys(errors).length > 0) {
 			return fail(400, {
-				message: 'Please fill in all fields, including the invite code',
-				values: { name, email, invite_token }
+				message: 'Please correct the highlighted fields',
+				values: { name, email, invite_token },
+				errors
 			});
 		}
 
 		if (!API_URL) {
 			return fail(500, {
 				message: 'Missing API_URL in frontend .env',
-				values: { name, email, invite_token }
+				values: { name, email, invite_token },
+				errors: {}
 			});
 		}
 
@@ -62,7 +80,7 @@ export const actions: Actions = {
 			redirect: 'manual',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-				Accept: 'text/html,application/xhtml+xml',
+				Accept: 'application/json, text/html,application/xhtml+xml',
 				cookie: preflightCookieHeader,
 				'X-CSRF-TOKEN': csrfToken,
 				Referer: `${API_URL}${registerPath}`
@@ -77,10 +95,24 @@ export const actions: Actions = {
 			applySetCookie(cookies, sc);
 		}
 
+		if (res.status === 422) {
+			const json = await res.json().catch(() => ({}));
+			const fieldErrors = (json.errors ?? {}) as Record<string, string[]>;
+			const mapped = Object.fromEntries(
+				Object.entries(fieldErrors).map(([k, arr]) => [k, arr?.[0] ?? 'Invalid input'])
+			);
+			return fail(422, {
+				message: 'Please fix the highlighted fields',
+				values: { name, email, invite_token },
+				errors: mapped
+			});
+		}
+
 		if (res.status !== 302 && res.status !== 303) {
 			return fail(400, {
 				message: 'Registration failed — check invite code, full name, or duplicate email',
-				values: { name, email, invite_token }
+				values: { name, email, invite_token },
+				errors: {}
 			});
 		}
 
@@ -90,14 +122,16 @@ export const actions: Actions = {
 			return fail(400, {
 				message:
 					'Server rejected the request — check the invite code and that the organization has a team',
-				values: { name, email, invite_token }
+				values: { name, email, invite_token },
+				errors: {}
 			});
 		}
 
 		if (location.includes('/login')) {
 			return fail(400, {
 				message: 'Invalid session — try again',
-				values: { name, email, invite_token }
+				values: { name, email, invite_token },
+				errors: {}
 			});
 		}
 

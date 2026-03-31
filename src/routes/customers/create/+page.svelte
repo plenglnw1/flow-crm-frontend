@@ -5,6 +5,8 @@
 	interface FormState {
 		error?: boolean;
 		message?: string;
+		errors?: Record<string, string>;
+		values?: Record<string, string>;
 	}
 
 	let { form } = $props<{ form: FormState | null }>();
@@ -12,6 +14,29 @@
 	let isLoading = $state(false);
 	let avatarInput: HTMLInputElement | null = null;
 	let previewImage = $state<string | null>(null);
+	let fullname = $state('');
+	let nickname = $state('');
+	let lineId = $state('');
+	let phone = $state('');
+	let email = $state('');
+	let province = $state('');
+	let tags = $state('');
+	let address = $state('');
+	let isActive = $state(true);
+
+	$effect(() => {
+		const v = form?.values;
+		if (!v) return;
+		fullname = v.fullname ?? '';
+		nickname = v.nickname ?? '';
+		lineId = v.line_id ?? '';
+		phone = v.phone ?? '';
+		email = v.email ?? '';
+		province = v.province ?? '';
+		tags = v.tags ?? '';
+		address = v.address ?? '';
+		isActive = v.is_active !== '0';
+	});
 
 	function handleImageChange(event: Event) {
 		const input = event.target as HTMLInputElement;
@@ -163,8 +188,12 @@
 								required
 								maxlength="255"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+								bind:value={fullname}
 							/>
 						</div>
+						{#if form?.errors?.fullname}
+							<p class="text-xs text-red-600 mt-1">{form.errors.fullname}</p>
+						{/if}
 					</div>
 
 					<div>
@@ -177,6 +206,7 @@
 								name="nickname"
 								id="nickname"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+								bind:value={nickname}
 							/>
 						</div>
 					</div>
@@ -193,8 +223,12 @@
 								required
 								maxlength="100"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+								bind:value={lineId}
 							/>
 						</div>
+						{#if form?.errors?.line_id}
+							<p class="text-xs text-red-600 mt-1">{form.errors.line_id}</p>
+						{/if}
 					</div>
 
 					<div>
@@ -207,6 +241,7 @@
 								name="phone"
 								id="phone"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+								bind:value={phone}
 							/>
 						</div>
 					</div>
@@ -221,8 +256,12 @@
 								name="email"
 								id="email"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+								bind:value={email}
 							/>
 						</div>
+						{#if form?.errors?.email}
+							<p class="text-xs text-red-600 mt-1">{form.errors.email}</p>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -245,6 +284,7 @@
 								id="province"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
 								placeholder="e.g. Bangkok"
+								bind:value={province}
 							/>
 						</div>
 					</div>
@@ -260,6 +300,7 @@
 								id="tags"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
 								placeholder="Comma-separated, e.g. VIP, clinic"
+								bind:value={tags}
 							/>
 						</div>
 					</div>
@@ -274,6 +315,7 @@
 								id="address"
 								rows="3"
 								class="block w-full rounded-lg border-0 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+								bind:value={address}
 							></textarea>
 						</div>
 					</div>
@@ -284,7 +326,7 @@
 								id="is_active"
 								name="is_active"
 								type="checkbox"
-								checked
+								bind:checked={isActive}
 								class="h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-600 cursor-pointer"
 							/>
 						</div>

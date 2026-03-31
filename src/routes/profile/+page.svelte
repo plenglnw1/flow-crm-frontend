@@ -153,40 +153,5 @@
 				</form>
 			</div>
 		</div>
-
-		<div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg border border-slate-100">
-			<div class="max-w-xl">
-				<h2 class="text-lg font-semibold text-slate-900">Delete Account</h2>
-				<p class="mt-1 text-sm text-slate-500">
-					Your account and access will be removed. This cannot be undone.
-				</p>
-
-				{#if form?.deleteForm && form?.message}
-					<p class="mt-4 text-sm font-medium text-red-700">{form.message}</p>
-				{/if}
-
-				<form method="POST" action="?/destroyAccount" class="mt-6 space-y-4">
-					<div>
-						<label class="block text-sm font-medium text-slate-700" for="delete_password"
-							>Confirm with your password</label
-						>
-						<input
-							id="delete_password"
-							name="password"
-							type="password"
-							required
-							autocomplete="current-password"
-							class="mt-1 block w-full rounded-xl border border-slate-200 px-4 py-2 shadow-sm focus:border-red-500 focus:ring-red-500"
-						/>
-					</div>
-					<button
-						type="submit"
-						class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-500 transition"
-					>
-						Delete account
-					</button>
-				</form>
-			</div>
-		</div>
 	</div>
 </div>
