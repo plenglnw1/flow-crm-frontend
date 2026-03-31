@@ -23,7 +23,7 @@ type Activity = {
 	script: string;
 };
 
-export const load: PageServerLoad = async ({ request }) => {
+export const load: PageServerLoad = async ({ request, locals }) => {
 	const cookieHeader = backendCookieHeaderFromRequest(request);
 
 	const headers: Record<string, string> = { Accept: 'application/json' };
@@ -40,7 +40,8 @@ export const load: PageServerLoad = async ({ request }) => {
 
 	const data = await res.json();
 	return {
-		activities: (data.activities ?? []) as Activity[]
+		activities: (data.activities ?? []) as Activity[],
+		realtimeUserId: locals.user?.id ? String(locals.user.id) : null
 	};
 };
 

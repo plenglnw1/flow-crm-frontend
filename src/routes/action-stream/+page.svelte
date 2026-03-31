@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { subscribeToActivityStream } from '$lib/realtime/activity-stream';
 	import { customerFormalLabel, customerNicknameOrNull } from '$lib/customer-display';
 
 	type ActivityPriorityKey = 'urgent' | 'medium' | 'normal';
@@ -22,7 +24,7 @@
 		script: string;
 	};
 
-	let { data }: { data: { activities: Activity[] } } = $props();
+	let { data }: { data: { activities: Activity[]; realtimeUserId: string | null } } = $props();
 
 	let selectedId = $state<string>(data.activities[0]?.id ?? '');
 	let toast = $state<string | null>(null);
@@ -66,7 +68,7 @@
 		const a = activeActivity;
 		if (!a?.script) return;
 		await navigator.clipboard?.writeText(a.script);
-		toast = 'คัดลอกข้อความแล้ว!';
+		toast = 'Copied to clipboard';
 		setTimeout(() => (toast = null), 2500);
 	}
 
@@ -81,15 +83,43 @@
 		});
 
 		if (!res.ok) return;
-		window.location.reload();
+		await invalidateAll();
 	}
+
+	onMount(() => {
+		const id = data.realtimeUserId;
+		if (!id) return;
+
+		let cancelled = false;
+		let lastRefreshAt = 0;
+		let cleanup: (() => void) | undefined;
+
+		void subscribeToActivityStream(id, async () => {
+			const now = Date.now();
+			// Debounce bursts of events from automation flows.
+			if (cancelled || now - lastRefreshAt < 750) return;
+			lastRefreshAt = now;
+			await invalidateAll();
+		}).then((fn) => {
+			if (cancelled) {
+				fn();
+				return;
+			}
+			cleanup = fn;
+		});
+
+		return () => {
+			cancelled = true;
+			cleanup?.();
+		};
+	});
 </script>
 
 <div class="max-w-screen-2xl mx-auto p-4 md:p-6">
 	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 		<div>
 			<h1 class="text-2xl font-bold text-slate-900">Action Stream</h1>
-			<p class="text-slate-500 mt-1">กิจกรรมที่ต้องทำ เรียงตามความสำคัญ</p>
+			<p class="text-slate-500 mt-1">Open tasks, ordered by priority</p>
 		</div>
 
 		<div class="flex bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
@@ -100,7 +130,7 @@
 					: 'text-slate-600 hover:bg-slate-50'}"
 				onclick={() => (priorityFilter = 'all')}
 			>
-				ทั้งหมด
+				All
 			</button>
 
 			<button
@@ -110,7 +140,7 @@
 					: 'text-slate-600 hover:bg-slate-50'}"
 				onclick={() => (priorityFilter = 'urgent')}
 			>
-				ด่วน
+				Urgent
 			</button>
 
 			<button
@@ -120,7 +150,7 @@
 					: 'text-slate-600 hover:bg-slate-50'}"
 				onclick={() => (priorityFilter = 'medium')}
 			>
-				ปานกลาง
+				Medium
 			</button>
 		</div>
 	</div>
@@ -130,7 +160,7 @@
 		<div class="lg:col-span-4 space-y-3 max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 custom-scrollbar">
 			{#if visibleActivities.length === 0}
 				<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 text-slate-500">
-					ไม่มีงานที่ต้องทำ
+					No open tasks
 				</div>
 			{:else}
 				{#each visibleActivities as a (a.id)}
@@ -176,7 +206,7 @@
 								</svg>
 								{a.time}
 							</div>
-							<div class="font-bold text-slate-800 text-sm">฿{a.amount.toLocaleString()}</div>
+							<div class="font-bold text-slate-800 text-sm">THB {a.amount.toLocaleString()}</div>
 						</div>
 					</button>
 				{/each}
@@ -196,7 +226,7 @@
 									{activeActivity.priority_label}
 								</span>
 								<span class="text-slate-500 text-sm flex items-center gap-1">
-									กำหนด <span>{activeActivity.time}</span>
+									Due <span>{activeActivity.time}</span>
 								</span>
 							</div>
 
@@ -208,14 +238,14 @@
 						</div>
 
 						<div class="text-right">
-							<p class="text-xs text-slate-400 mb-1">มูลค่าดีล</p>
-							<p class="text-3xl font-bold text-emerald-500">฿{activeActivity.amount.toLocaleString()}</p>
+							<p class="text-xs text-slate-400 mb-1">Deal value</p>
+							<p class="text-3xl font-bold text-emerald-500">THB {activeActivity.amount.toLocaleString()}</p>
 						</div>
 					</div>
 
 					<div class="grid grid-cols-3 gap-4 mb-6">
 						<div class="bg-slate-50 p-4 rounded-xl">
-							<p class="text-xs text-slate-400 mb-1">ชื่อเล่น</p>
+							<p class="text-xs text-slate-400 mb-1">Nickname</p>
 							<p class="font-bold text-slate-800 text-lg">
 								{customerNicknameOrNull(activeActivity.customer_nickname) ?? '—'}
 							</p>
@@ -225,7 +255,7 @@
 							<p class="font-bold text-slate-800 text-lg">{activeActivity.line_id ?? '-'}</p>
 						</div>
 						<div class="bg-slate-50 p-4 rounded-xl">
-							<p class="text-xs text-slate-400 mb-1">ติดต่อล่าสุด</p>
+							<p class="text-xs text-slate-400 mb-1">Last contact</p>
 							<p class="font-bold text-slate-800 text-lg">{activeActivity.last_contact ?? '-'}</p>
 						</div>
 					</div>
@@ -238,16 +268,16 @@
 								</svg>
 							</div>
 							<div>
-								<h4 class="font-bold text-amber-600">สัญญาณ</h4>
+								<h4 class="font-bold text-amber-600">Notice</h4>
 								<p class="text-slate-600 text-sm">{activeActivity.warning}</p>
 							</div>
 						</div>
 					{/if}
 
 					<div class="mb-8">
-						<p class="text-sm font-semibold text-slate-500 mb-2">Script สำหรับส่ง</p>
+						<p class="text-sm font-semibold text-slate-500 mb-2">Message script</p>
 						<div class="bg-slate-50 border border-slate-200 rounded-xl p-6 text-slate-700 leading-relaxed text-lg shadow-inner">
-							<p class="whitespace-pre-wrap">{activeActivity.script || '— ไม่มี Script สำหรับ Stage นี้ —'}</p>
+							<p class="whitespace-pre-wrap">{activeActivity.script || '— No script for this stage —'}</p>
 						</div>
 					</div>
 
@@ -285,12 +315,12 @@
 							<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 							</svg>
-							ทำเสร็จแล้ว
+							Mark complete
 						</button>
 					</div>
 				</div>
 			{:else}
-				<div class="text-slate-500">ไม่มีข้อมูล</div>
+				<div class="text-slate-500">No data</div>
 			{/if}
 		</div>
 	</div>
